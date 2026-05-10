@@ -1,192 +1,752 @@
+
+
+
+
 // 'use client';
 
-// import React, { useState } from 'react';
-// import { CheckCircle2 } from 'lucide-react';
-// import { MEAL_PLANS } from '@/components/data/mealPlans';
+// import React, { useState, useEffect, useRef } from 'react';
+// import { Leaf, Drumstick, Sparkles, Clock, Truck, Star, ChevronRight } from 'lucide-react';
 
-// const WHATSAPP_NUMBER = "+971557998925";
+// const WHATSAPP_NUMBER = '+971557998925';
 
+// /* ─────────────────────────────────────────────
+//    DATA  (corrected prices & structure)
+//    2 Meals / Day — Monthly Plans
+// ───────────────────────────────────────────── */
+// const PLANS = [
+//   {
+//     tier: 'Basic',
+//     badge: null,
+//     vegPrice: 699,
+//     nonvegPrice: 899,
+//     color: '#FF6B2C',
+//     features: {
+//       veg: ['Roti (4 pcs) + Rice', 'Dal + 1 Sabzi', 'Salad & Pickle', 'Mon – Sat delivery'],
+//       nonveg: ['Roti (4 pcs) + Rice', 'Chicken / Egg Curry', 'Salad & Pickle', 'Mon – Sat delivery'],
+//     },
+//   },
+//   {
+//     tier: 'Standard',
+//     badge: '⭐ Most Preferred',
+//     vegPrice: 749,
+//     nonvegPrice: 949,
+//     color: '#E84A1A',
+//     features: {
+//       veg: ['Roti (4 pcs) + Rice', 'Dal + 2 Sabzi', 'Salad, Pickle & Papad', 'Sweets (3×/week)', 'Mon – Sat delivery'],
+//       nonveg: ['Roti (4 pcs) + Rice', 'Chicken Curry + Dal / Sabzi', 'Salad, Pickle & Papad', 'Sweets (3×/week)', 'Mon – Sat delivery'],
+//     },
+//   },
+//   {
+//     tier: 'Premium',
+//     badge: null,
+//     vegPrice: 849,
+//     nonvegPrice: 1049,
+//     color: '#C73A0F',
+//     features: {
+//       veg: ['Roti (unlimited) + Rice', 'Dal + 3 Sabzi + Soup', 'Salad, Pickle & Papad', 'Daily Dessert', 'Chaach included', 'Mon – Sat delivery'],
+//       nonveg: ['Roti (unlimited) + Rice', 'Chicken + Special Dish', 'Salad, Pickle & Raita', 'Daily Dessert', 'Shorba included', 'Mon – Sat delivery'],
+//     },
+//   },
+// ];
+
+// /* ─────────────────────────────────────────────
+//    HOOK
+// ───────────────────────────────────────────── */
+// function useInView(threshold = 0.05) {
+//   const ref = useRef<HTMLDivElement>(null);
+//   const [inView, setInView] = useState(false);
+//   useEffect(() => {
+//     const obs = new IntersectionObserver(
+//       ([entry]) => { if (entry.isIntersecting) setInView(true); },
+//       { threshold }
+//     );
+//     if (ref.current) obs.observe(ref.current);
+//     return () => obs.disconnect();
+//   }, [threshold]);
+//   return { ref, inView };
+// }
+
+// /* ─────────────────────────────────────────────
+//    COMPONENT
+// ───────────────────────────────────────────── */
 // export default function MealPlans() {
-//   const [activePlanTab, setActivePlanTab] = useState<'veg' | 'nonveg'>('veg');
-
-//   const activeData = MEAL_PLANS[activePlanTab];
-//   const ActiveIcon = activeData.icon;
+//   const [tab, setTab] = useState<'veg' | 'nonveg'>('veg');
+//   const { ref: sectionRef, inView } = useInView(0.05);
 
 //   return (
-//     <section id="meal-plans" className="py-24 bg-white relative">
-//       {/* Soft Background Accent */}
-//       <div className="absolute top-0 w-full h-[400px] bg-slate-900" />
-      
-//       <div className="max-w-7xl mx-auto px-6 relative z-10">
-//         <div className="text-center mb-12">
-//           <span className="text-sky-400 font-bold text-sm uppercase tracking-[3px] mb-3 block">
-//             Subscription
-//           </span>
-//           <h2 className="text-4xl md:text-5xl font-black text-white">
-//             Choose Your Meal Plan
-//           </h2>
-//           <p className="text-slate-400 mt-4 text-lg">
-//             6 Days a Week • 26 Days a Month • Free Delivery
-//           </p>
-//         </div>
+//     <>
+//       <style>{`
+//         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500;600&display=swap');
 
-//         {/* Toggle Veg / Non-Veg */}
-//         <div className="flex justify-center mb-12">
-//           <div className="bg-slate-800 p-1.5 rounded-full inline-flex shadow-inner">
-//             <button 
-//               onClick={() => setActivePlanTab('veg')}
-//               className={`flex items-center gap-2 px-8 py-3 rounded-full font-bold transition-all ${
-//                 activePlanTab === 'veg' 
-//                   ? 'bg-white text-green-600 shadow-sm' 
-//                   : 'text-slate-400 hover:text-white'
-//               }`}
-//             >
-//               <MEAL_PLANS.veg.icon size={18} /> Veg Plans
-//             </button>
-//             <button 
-//               onClick={() => setActivePlanTab('nonveg')}
-//               className={`flex items-center gap-2 px-8 py-3 rounded-full font-bold transition-all ${
-//                 activePlanTab === 'nonveg' 
-//                   ? 'bg-white text-rose-600 shadow-sm' 
-//                   : 'text-slate-400 hover:text-white'
-//               }`}
-//             >
-//               <MEAL_PLANS.nonveg.icon size={18} /> Non-Veg Plans
-//             </button>
-//           </div>
-//         </div>
+//         /* ── Root ── */
+//         .mp-root {
+//           font-family: 'DM Sans', sans-serif;
+//           background: linear-gradient(170deg, #FFF8F0 0%, #FFF0E0 40%, #FFF5EB 100%);
+//           position: relative;
+//           overflow: hidden;
+//           padding: 80px 0 100px;
+//         }
 
-//         {/* Plan Content Container */}
-//         <div className="bg-slate-50 rounded-[3rem] p-6 md:p-12 shadow-2xl shadow-slate-200/50 border border-slate-200">
-          
-//           {/* Header for Category */}
-//           <div className="text-center mb-12">
-//             <div className={`inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br ${activeData.color} text-white shadow-lg ${activeData.shadow} mb-4`}>
-//               <ActiveIcon size={32} />
+//         /* ── Blobs ── */
+//         .mp-blob {
+//           position: absolute;
+//           border-radius: 50%;
+//           filter: blur(90px);
+//           opacity: 0.28;
+//           pointer-events: none;
+//           animation: mpBlobDrift 10s ease-in-out infinite;
+//         }
+//         @keyframes mpBlobDrift {
+//           0%,100% { transform: translate(0,0) scale(1); }
+//           40%      { transform: translate(40px,-30px) scale(1.07); }
+//           70%      { transform: translate(-25px,25px) scale(0.94); }
+//         }
+
+//         /* ── Dot pattern ── */
+//         .mp-dots {
+//           position: absolute;
+//           inset: 0;
+//           background-image: radial-gradient(circle, rgba(255,107,44,0.12) 1px, transparent 1px);
+//           background-size: 36px 36px;
+//           pointer-events: none;
+//           z-index: 0;
+//         }
+
+//         /* ── Spice deco ── */
+//         .mp-spice {
+//           position: absolute;
+//           opacity: 0.055;
+//           pointer-events: none;
+//           animation: mpSpinSlow 22s linear infinite;
+//           z-index: 0;
+//           display: none;
+//         }
+//         @keyframes mpSpinSlow {
+//           from { transform: rotate(0deg); }
+//           to   { transform: rotate(360deg); }
+//         }
+
+//         /* ── Eyebrow ── */
+//         .mp-eyebrow {
+//           display: inline-flex;
+//           align-items: center;
+//           gap: 8px;
+//           background: rgba(255,107,44,0.1);
+//           border: 1px solid rgba(255,107,44,0.28);
+//           border-radius: 50px;
+//           padding: 6px 16px;
+//           font-size: 11px;
+//           font-weight: 600;
+//           color: #FF6B2C;
+//           letter-spacing: 1.5px;
+//           text-transform: uppercase;
+//           margin-bottom: 14px;
+//         }
+
+//         /* ── Heading ── */
+//         .mp-heading {
+//           font-family: 'Playfair Display', serif;
+//           font-size: clamp(28px, 5vw, 54px);
+//           font-weight: 900;
+//           color: #1A0A00;
+//           line-height: 1.08;
+//           letter-spacing: -1px;
+//           margin: 0 0 14px;
+//         }
+//         .mp-heading em {
+//           font-style: italic;
+//           color: #FF6B2C;
+//           position: relative;
+//         }
+//         .mp-heading em::after {
+//           content: '';
+//           position: absolute;
+//           bottom: 2px; left: 0; right: 0;
+//           height: 3px;
+//           background: linear-gradient(90deg,#FF6B2C,#F5A623);
+//           border-radius: 2px;
+//           transform: scaleX(0);
+//           transform-origin: left;
+//           transition: transform 1s cubic-bezier(.16,1,.3,1) 0.5s;
+//         }
+//         .mp-root.visible .mp-heading em::after { transform: scaleX(1); }
+
+//         /* ── Info pills ── */
+//         .mp-pill {
+//           display: inline-flex;
+//           align-items: center;
+//           gap: 6px;
+//           background: rgba(255,255,255,0.85);
+//           backdrop-filter: blur(10px);
+//           border: 1px solid rgba(255,107,44,0.18);
+//           border-radius: 50px;
+//           padding: 7px 14px;
+//           font-size: 12px;
+//           font-weight: 500;
+//           color: #6B5344;
+//           white-space: nowrap;
+//         }
+
+//         /* ── Toggle ── */
+//         .mp-toggle-wrap {
+//           background: rgba(255,255,255,0.75);
+//           backdrop-filter: blur(20px);
+//           border: 1px solid rgba(255,107,44,0.2);
+//           border-radius: 60px;
+//           padding: 5px;
+//           display: inline-flex;
+//           box-shadow: 0 8px 40px rgba(255,107,44,0.1);
+//         }
+//         .mp-toggle-btn {
+//           display: flex;
+//           align-items: center;
+//           gap: 7px;
+//           padding: 10px 20px;
+//           border-radius: 50px;
+//           font-family: 'DM Sans', sans-serif;
+//           font-size: 14px;
+//           font-weight: 600;
+//           cursor: pointer;
+//           border: none;
+//           background: transparent;
+//           color: #9B7B6A;
+//           transition: all 0.35s cubic-bezier(.34,1.56,.64,1);
+//           white-space: nowrap;
+//         }
+//         .mp-toggle-btn.active {
+//           background: linear-gradient(135deg,#FF6B2C,#E84A1A);
+//           color: #fff;
+//           box-shadow: 0 6px 24px rgba(255,107,44,0.38);
+//           transform: scale(1.03);
+//         }
+
+//         /* ── Section divider ── */
+//         .mp-divider-row {
+//           display: flex;
+//           align-items: center;
+//           gap: 14px;
+//           margin-bottom: 28px;
+//         }
+//         .mp-section-title {
+//           font-family: 'Playfair Display', serif;
+//           font-size: clamp(16px, 2.5vw, 20px);
+//           font-weight: 700;
+//           color: #1A0A00;
+//           white-space: nowrap;
+//         }
+//         .mp-section-label {
+//           font-size: 10px;
+//           font-weight: 700;
+//           letter-spacing: 2px;
+//           text-transform: uppercase;
+//           color: #9B7B6A;
+//           white-space: nowrap;
+//         }
+//         .mp-divider-line {
+//           flex: 1;
+//           height: 1px;
+//           background: rgba(26,10,0,0.08);
+//           min-width: 12px;
+//         }
+
+//         /* ── Cards grid ── */
+//         .mp-cards-grid {
+//           display: grid;
+//           grid-template-columns: 1fr;
+//           gap: 20px;
+//         }
+
+//         /* ── Card ── */
+//         .mp-card {
+//           background: #fff;
+//           border-radius: 24px;
+//           border: 1.5px solid rgba(26,10,0,0.07);
+//           position: relative;
+//           overflow: hidden;
+//           transition: all 0.38s cubic-bezier(.34,1.56,.64,1);
+//           display: flex;
+//           flex-direction: column;
+//           box-shadow: 0 4px 24px rgba(26,10,0,0.06);
+//         }
+//         .mp-card:hover {
+//           transform: translateY(-7px) scale(1.01);
+//           box-shadow: 0 24px 60px rgba(26,10,0,0.12);
+//         }
+//         .mp-card.featured {
+//           border-color: #FF6B2C;
+//           box-shadow: 0 12px 48px rgba(255,107,44,0.18);
+//         }
+//         .mp-card.featured:hover {
+//           box-shadow: 0 28px 70px rgba(255,107,44,0.26);
+//         }
+
+//         /* ── Card stripe ── */
+//         .mp-card-stripe {
+//           height: 4px;
+//           width: 100%;
+//           flex-shrink: 0;
+//         }
+//         .mp-card.featured .mp-card-stripe { height: 5px; }
+
+//         /* ── Card badge ── */
+//         .mp-card-badge {
+//           position: absolute;
+//           top: 0;
+//           left: 50%;
+//           transform: translateX(-50%);
+//           background: linear-gradient(135deg,#FF6B2C,#E84A1A);
+//           color: #fff;
+//           font-size: 9px;
+//           font-weight: 700;
+//           letter-spacing: 1.5px;
+//           text-transform: uppercase;
+//           padding: 5px 16px;
+//           border-radius: 0 0 12px 12px;
+//           white-space: nowrap;
+//         }
+
+//         /* ── Card body ── */
+//         .mp-card-body {
+//           padding: 26px 26px 24px;
+//           display: flex;
+//           flex-direction: column;
+//           flex: 1;
+//         }
+
+//         .mp-tier-name {
+//           font-family: 'Playfair Display', serif;
+//           font-size: 21px;
+//           font-weight: 700;
+//           color: #1A0A00;
+//           margin-bottom: 6px;
+//           margin-top: 4px;
+//         }
+//         .mp-card.featured .mp-tier-name { margin-top: 16px; }
+
+//         .mp-price {
+//           font-family: 'Playfair Display', serif;
+//           font-size: 40px;
+//           font-weight: 900;
+//           line-height: 1;
+//           margin-bottom: 3px;
+//         }
+//         .mp-price-sub {
+//           font-size: 12px;
+//           color: #9B7B6A;
+//           margin-bottom: 22px;
+//         }
+
+//         /* ── Feature list ── */
+//         .mp-features {
+//           list-style: none;
+//           margin: 0 0 22px;
+//           padding: 0;
+//           flex: 1;
+//         }
+//         .mp-feature-item {
+//           display: flex;
+//           align-items: flex-start;
+//           gap: 9px;
+//           font-size: 13px;
+//           color: #6B5344;
+//           font-weight: 500;
+//           line-height: 1.5;
+//           padding: 5px 0;
+//         }
+//         .mp-check-icon {
+//           flex-shrink: 0;
+//           margin-top: 2px;
+//           width: 16px;
+//           height: 16px;
+//           border-radius: 50%;
+//           display: flex;
+//           align-items: center;
+//           justify-content: center;
+//         }
+
+//         /* ── Buttons ── */
+//         .mp-btn-primary {
+//           display: block;
+//           width: 100%;
+//           padding: 13px;
+//           border-radius: 50px;
+//           border: none;
+//           font-family: 'DM Sans', sans-serif;
+//           font-size: 14px;
+//           font-weight: 700;
+//           color: #fff;
+//           cursor: pointer;
+//           text-align: center;
+//           text-decoration: none;
+//           transition: all 0.35s cubic-bezier(.34,1.56,.64,1);
+//           background: linear-gradient(135deg,#FF6B2C,#E84A1A);
+//           box-shadow: 0 8px 24px rgba(255,107,44,0.3);
+//         }
+//         .mp-btn-primary:hover {
+//           transform: translateY(-2px);
+//           box-shadow: 0 14px 36px rgba(255,107,44,0.45);
+//         }
+//         .mp-btn-outline {
+//           display: block;
+//           width: 100%;
+//           padding: 13px;
+//           border-radius: 50px;
+//           border: 1.5px solid rgba(26,10,0,0.14);
+//           background: transparent;
+//           font-family: 'DM Sans', sans-serif;
+//           font-size: 14px;
+//           font-weight: 600;
+//           color: #1A0A00;
+//           cursor: pointer;
+//           text-align: center;
+//           text-decoration: none;
+//           transition: all 0.3s ease;
+//         }
+//         .mp-btn-outline:hover {
+//           border-color: #FF6B2C;
+//           color: #FF6B2C;
+//           background: rgba(255,107,44,0.04);
+//           transform: translateY(-2px);
+//         }
+
+//         /* ── Trial banner ── */
+//         .mp-trial {
+//           background: #fff;
+//           border: 1px solid rgba(255,107,44,0.2);
+//           border-radius: 24px;
+//           padding: 28px;
+//           margin-top: 52px;
+//           display: flex;
+//           align-items: center;
+//           justify-content: space-between;
+//           gap: 20px;
+//           position: relative;
+//           overflow: hidden;
+//           box-shadow: 0 8px 50px rgba(255,107,44,0.07);
+//           flex-wrap: wrap;
+//         }
+//         .mp-trial::before {
+//           content: '';
+//           position: absolute;
+//           top: -50px; right: -50px;
+//           width: 180px; height: 180px;
+//           background: radial-gradient(circle,#FFD580,transparent 70%);
+//           opacity: 0.5;
+//           pointer-events: none;
+//         }
+//         .mp-trial-btn {
+//           flex-shrink: 0;
+//           padding: 13px 26px;
+//           border-radius: 50px;
+//           background: linear-gradient(135deg,#FF6B2C,#E84A1A);
+//           color: #fff;
+//           font-family: 'DM Sans', sans-serif;
+//           font-size: 14px;
+//           font-weight: 700;
+//           border: none;
+//           cursor: pointer;
+//           text-decoration: none;
+//           display: inline-flex;
+//           align-items: center;
+//           gap: 8px;
+//           transition: all 0.35s cubic-bezier(.34,1.56,.64,1);
+//           box-shadow: 0 8px 28px rgba(255,107,44,0.4);
+//         }
+//         .mp-trial-btn:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 16px 40px rgba(255,107,44,0.5); }
+
+//         /* ── Fade animations ── */
+//         .mp-fade { opacity: 0; transform: translateY(30px); transition: opacity 0.7s cubic-bezier(.16,1,.3,1), transform 0.7s cubic-bezier(.16,1,.3,1); }
+//         .mp-root.visible .mp-fade { opacity: 1; transform: translateY(0); }
+//         .mp-fade-d1 { transition-delay: 0.08s; }
+//         .mp-fade-d2 { transition-delay: 0.16s; }
+//         .mp-fade-d3 { transition-delay: 0.24s; }
+//         .mp-fade-d4 { transition-delay: 0.32s; }
+//         .mp-fade-d5 { transition-delay: 0.40s; }
+//         .mp-fade-d6 { transition-delay: 0.52s; }
+
+//         /* ── Container ── */
+//         .mp-container {
+//           max-width: 1200px;
+//           margin: 0 auto;
+//           padding: 0 16px;
+//           position: relative;
+//           z-index: 5;
+//         }
+
+//         /* ── Pills row ── */
+//         .mp-pills-row {
+//           display: flex;
+//           justify-content: center;
+//           gap: 8px;
+//           flex-wrap: wrap;
+//           margin-bottom: 28px;
+//         }
+
+//         /* ── Note ── */
+//         .mp-note {
+//           text-align: center;
+//           font-size: 12px;
+//           color: #9B7B6A;
+//           margin-top: 16px;
+//           line-height: 1.6;
+//         }
+
+//         /* ══════════════════════════════
+//            RESPONSIVE BREAKPOINTS
+//         ══════════════════════════════ */
+
+//         /* XS: max 360px */
+//         @media (max-width: 360px) {
+//           .mp-root { padding: 56px 0 72px; }
+//           .mp-container { padding: 0 12px; }
+//           .mp-toggle-btn { padding: 9px 12px; font-size: 12px; gap: 5px; }
+//           .mp-card-body { padding: 20px 16px 18px; }
+//           .mp-price { font-size: 32px; }
+//           .mp-tier-name { font-size: 18px; }
+//           .mp-trial { padding: 20px 16px; }
+//           .mp-trial-btn { width: 100%; justify-content: center; }
+//           .mp-heading { font-size: 26px; letter-spacing: -0.5px; }
+//           .mp-section-label { display: none; }
+//         }
+
+//         /* SM: 361–559px */
+//         @media (min-width: 361px) and (max-width: 559px) {
+//           .mp-root { padding: 64px 0 80px; }
+//           .mp-container { padding: 0 14px; }
+//           .mp-card-body { padding: 24px 20px 20px; }
+//           .mp-price { font-size: 36px; }
+//           .mp-trial-btn { width: 100%; justify-content: center; }
+//           .mp-section-label { font-size: 9px; letter-spacing: 1px; }
+//         }
+
+//         /* MD: 560–767px — 2 columns */
+//         @media (min-width: 560px) {
+//           .mp-cards-grid { grid-template-columns: 1fr 1fr; }
+//           .mp-card.featured {
+//             grid-column: span 2;
+//             max-width: 440px;
+//             width: 100%;
+//             margin: 0 auto;
+//           }
+//         }
+
+//         /* MD-L: 768–899px */
+//         @media (min-width: 768px) {
+//           .mp-root { padding: 76px 0 96px; }
+//           .mp-container { padding: 0 24px; }
+//           .mp-toggle-btn { padding: 11px 24px; font-size: 15px; }
+//         }
+
+//         /* LG: 900px — 3 columns */
+//         @media (min-width: 900px) {
+//           .mp-root { padding: 90px 0 110px; }
+//           .mp-container { padding: 0 32px; }
+//           .mp-spice { display: block; }
+//           .mp-cards-grid { grid-template-columns: repeat(3, 1fr); }
+//           .mp-card.featured {
+//             grid-column: auto;
+//             max-width: none;
+//             transform: scale(1.04);
+//           }
+//           .mp-card.featured:hover { transform: scale(1.06) translateY(-7px); }
+//         }
+
+//         /* XL: 1200px+ */
+//         @media (min-width: 1200px) {
+//           .mp-container { padding: 0 48px; }
+//           .mp-price { font-size: 44px; }
+//           .mp-card-body { padding: 30px 30px 26px; }
+//         }
+//       `}</style>
+
+//       <section
+//         id="meal-plans"
+//         ref={sectionRef}
+//         className={`mp-root${inView ? ' visible' : ''}`}
+//       >
+//         {/* Background */}
+//         <div className="mp-dots" />
+//         <div className="mp-blob" style={{ width: 500, height: 500, background: '#FFD580', top: -80, right: -100, animationDelay: '0s' }} />
+//         <div className="mp-blob" style={{ width: 380, height: 380, background: '#FF9F6B', bottom: 0, left: -80, animationDelay: '-4s' }} />
+//         <div className="mp-blob" style={{ width: 280, height: 280, background: '#FFCFB0', top: '45%', left: '55%', animationDelay: '-7s' }} />
+
+//         {/* Spice deco (desktop only via CSS) */}
+//         <div className="mp-spice" style={{ top: '18%', left: '4%', fontSize: 44 }}>🌶️</div>
+//         <div className="mp-spice" style={{ bottom: '18%', right: '3%', fontSize: 56, animationDuration: '30s' }}>🍲</div>
+
+//         <div className="mp-container">
+
+//           {/* ── HEADER ── */}
+//           <div style={{ textAlign: 'center', marginBottom: 40 }}>
+//             <div className="mp-fade mp-fade-d1">
+//               <span className="mp-eyebrow">
+//                 <Sparkles size={11} />
+//                 Subscription Plans
+//               </span>
 //             </div>
-//             <h3 className="text-3xl font-black text-slate-900">{activeData.brand}</h3>
-//             <p className="text-slate-500 font-medium mt-1">{activeData.tagline}</p>
-//           </div>
+//             <h2 className="mp-heading mp-fade mp-fade-d2">
+//               Choose Your <em>Meal Plan</em>
+//             </h2>
+//             <p className="mp-fade mp-fade-d3" style={{ fontSize: 15, color: '#9B7B6A', lineHeight: 1.7, margin: '0 auto 22px', maxWidth: 480 }}>
+//               Handcrafted every morning by female home chefs — delivered fresh, 6 days a week.
+//             </p>
 
-//           {/* 1 Meal / Day Plans */}
-//           <div className="mb-16">
-//             <div className="flex items-center gap-4 mb-8">
-//               <h4 className="text-xl font-black text-slate-900 whitespace-nowrap">1 Meal / Day</h4>
-//               <div className="h-px bg-slate-200 w-full"></div>
-//               <span className="text-xs font-bold text-slate-500 uppercase tracking-widest whitespace-nowrap">Lunch OR Dinner</span>
-//             </div>
-            
-//             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-//               {activeData.oneMeal.map((plan, idx) => (
-//                 <div key={idx} className="bg-white rounded-3xl p-8 border border-slate-200 shadow-sm hover:shadow-xl transition-all duration-300 relative overflow-hidden group">
-//                   <div className={`absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r ${activeData.color}`} />
-                  
-//                   <h5 className="text-2xl font-black text-slate-900 mb-2">{plan.name}</h5>
-                  
-//                   <div className="flex gap-6 mt-6 mb-8 pb-8 border-b border-slate-100">
-//                     <div>
-//                       <p className="text-sm text-slate-400 font-bold uppercase tracking-wider mb-1">Weekly</p>
-//                       <p className="text-3xl font-black text-slate-800">AED {plan.weekly}</p>
-//                     </div>
-//                     <div className="w-px bg-slate-200"></div>
-//                     <div>
-//                       <p className="text-sm text-slate-400 font-bold uppercase tracking-wider mb-1">Monthly</p>
-//                       <p className={`text-3xl font-black ${activePlanTab === 'veg' ? 'text-green-600' : 'text-rose-600'}`}>AED {plan.monthly}</p>
-//                     </div>
-//                   </div>
-
-//                   <ul className="space-y-4 mb-8">
-//                     {plan.features.map((feature, fIdx) => (
-//                       <li key={fIdx} className="flex items-center gap-3 text-slate-600 font-medium">
-//                         <CheckCircle2 size={18} className={activePlanTab === 'veg' ? 'text-green-500' : 'text-rose-500'} />
-//                         {feature}
-//                       </li>
-//                     ))}
-//                   </ul>
-
-//                   <a 
-//                     href={`https://wa.me/${WHATSAPP_NUMBER}`} 
-//                     target="_blank" 
-//                     rel="noreferrer" 
-//                     className="block w-full text-center py-4 rounded-xl border-2 border-slate-200 text-slate-800 font-bold hover:border-slate-900 hover:bg-slate-900 hover:text-white transition-all"
-//                   >
-//                     Subscribe Now
-//                   </a>
-//                 </div>
+//             {/* Pills */}
+//             <div className="mp-fade mp-fade-d3 mp-pills-row">
+//               {[
+//                 { icon: <Clock size={12} />, text: '6 Days a Week' },
+//                 { icon: <Truck size={12} />, text: 'Free Delivery' },
+//                 { icon: <Star size={12} />, text: '26 Days / Month' },
+//               ].map(({ icon, text }) => (
+//                 <span key={text} className="mp-pill">{icon} {text}</span>
 //               ))}
 //             </div>
-//           </div>
 
-//           {/* 2 Meals / Day Plans */}
-//           <div>
-//              <div className="flex items-center gap-4 mb-8">
-//               <h4 className="text-xl font-black text-slate-900 whitespace-nowrap">2 Meals / Day</h4>
-//               <div className="h-px bg-slate-200 w-full"></div>
-//               <span className="text-xs font-bold text-slate-500 uppercase tracking-widest whitespace-nowrap">Lunch & Dinner</span>
-//             </div>
-
-//              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-//               {activeData.twoMeals.map((plan, idx) => (
-//                 <div key={idx} className={`bg-white rounded-3xl p-8 border ${plan.badge ? (activePlanTab === 'veg' ? 'border-green-500 shadow-green-100' : 'border-rose-500 shadow-rose-100') + ' shadow-2xl relative scale-100 md:scale-105 z-10' : 'border-slate-200 shadow-sm'} hover:shadow-xl transition-all flex flex-col`}>
-//                   {plan.badge && (
-//                     <div className={`absolute top-0 left-1/2 -translate-x-1/2 ${activeData.badgeBg} text-white text-xs font-black uppercase tracking-widest py-1.5 px-4 rounded-b-xl shadow-sm whitespace-nowrap`}>
-//                       {plan.badge}
-//                     </div>
-//                   )}
-                  
-//                   <h5 className={`text-xl font-black text-slate-900 mb-2 ${plan.badge ? 'mt-4' : ''}`}>{plan.name}</h5>
-//                   <div className="mb-6">
-//                     <span className="text-4xl font-black text-slate-900">AED {plan.price}</span>
-//                     <span className="text-slate-400 font-medium ml-1">/ month</span>
-//                   </div>
-
-//                   <ul className="space-y-4 mb-8 flex-1">
-//                     {plan.features.map((feature, fIdx) => (
-//                       <li key={fIdx} className="flex items-start gap-3 text-slate-600 font-medium text-sm">
-//                         <CheckCircle2 size={16} className={`shrink-0 mt-0.5 ${activePlanTab === 'veg' ? 'text-green-500' : 'text-rose-500'}`} />
-//                         {feature}
-//                       </li>
-//                     ))}
-//                   </ul>
-
-//                   <a 
-//                     href={`https://wa.me/${WHATSAPP_NUMBER}`} 
-//                     target="_blank" 
-//                     rel="noreferrer" 
-//                     className={`block w-full text-center py-4 rounded-xl font-bold transition-all ${plan.badge ? `bg-gradient-to-r ${activeData.color} text-white shadow-md hover:shadow-lg ${activeData.shadow}` : 'bg-slate-100 text-slate-800 hover:bg-slate-200'}`}
-//                   >
-//                     Select Plan
-//                   </a>
-//                 </div>
-//               ))}
-//              </div>
-//           </div>
-
-//           {/* Trial Banner */}
-//           <div className="mt-16 bg-sky-50 border border-sky-100 rounded-3xl p-8 flex flex-col sm:flex-row items-center justify-between gap-6 shadow-sm relative overflow-hidden">
-//             <div className="absolute right-0 top-0 w-32 h-32 bg-sky-200 rounded-full blur-3xl opacity-50 pointer-events-none" />
-//             <div className="flex items-center gap-5 relative z-10">
-//               <div className="w-14 h-14 bg-white rounded-full flex items-center justify-center text-3xl shadow-sm">🎁</div>
-//               <div>
-//                 <h4 className="text-xl font-black text-slate-900">Want to taste before subscribing?</h4>
-//                 <p className="text-slate-600 font-medium mt-1">Try our 2-day trial meal option.</p>
+//             {/* Toggle */}
+//             <div className="mp-fade mp-fade-d4">
+//               <div className="mp-toggle-wrap">
+//                 <button
+//                   className={`mp-toggle-btn${tab === 'veg' ? ' active' : ''}`}
+//                   onClick={() => setTab('veg')}
+//                 >
+//                   <Leaf size={15} /> Veg Plans
+//                 </button>
+//                 <button
+//                   className={`mp-toggle-btn${tab === 'nonveg' ? ' active' : ''}`}
+//                   onClick={() => setTab('nonveg')}
+//                 >
+//                   <Drumstick size={15} /> Non-Veg Plans
+//                 </button>
 //               </div>
 //             </div>
-//             <a 
-//               href={`https://wa.me/${WHATSAPP_NUMBER}`} 
-//               target="_blank" 
-//               rel="noreferrer" 
-//               className="relative z-10 px-8 py-4 bg-white border border-slate-200 rounded-full font-bold text-slate-800 hover:border-sky-500 hover:text-sky-600 hover:shadow-md transition-all whitespace-nowrap"
-//             >
-//               Book Trial
-//             </a>
+//           </div>
+
+//           {/* ── SECTION LABEL ── */}
+//           <div className="mp-fade mp-fade-d4 mp-divider-row">
+//             <span className="mp-section-title">2 Meals / Day</span>
+//             <div className="mp-divider-line" />
+//             <span className="mp-section-label">Monthly · Lunch &amp; Dinner</span>
+//           </div>
+
+//           {/* ── CARDS ── */}
+//           <div className="mp-fade mp-fade-d5 mp-cards-grid">
+//             {PLANS.map((plan) => {
+//               const price = tab === 'veg' ? plan.vegPrice : plan.nonvegPrice;
+//               const features = plan.features[tab];
+//               const isFeatured = !!plan.badge;
+
+//               return (
+//                 <div key={plan.tier} className={`mp-card${isFeatured ? ' featured' : ''}`}>
+//                   {/* Top color stripe */}
+//                   <div
+//                     className="mp-card-stripe"
+//                     style={{ background: `linear-gradient(90deg, ${plan.color}, #F5A623)` }}
+//                   />
+
+//                   {/* Badge */}
+//                   {isFeatured && <div className="mp-card-badge">{plan.badge}</div>}
+
+//                   <div className="mp-card-body">
+//                     <div className="mp-tier-name">{plan.tier} Plan</div>
+
+//                     <div className="mp-price" style={{ color: isFeatured ? plan.color : '#1A0A00' }}>
+//                       AED {price}
+//                     </div>
+//                     <div className="mp-price-sub">per month · 2 meals / day</div>
+
+//                     <ul className="mp-features">
+//                       {features.map((f) => (
+//                         <li key={f} className="mp-feature-item">
+//                           <span
+//                             className="mp-check-icon"
+//                             style={{ background: isFeatured ? 'rgba(255,107,44,0.1)' : 'rgba(26,10,0,0.05)' }}
+//                           >
+//                             <svg width="10" height="10" viewBox="0 0 24 24" fill="none"
+//                               stroke={isFeatured ? plan.color : '#9B7B6A'}
+//                               strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+//                               <polyline points="20 6 9 17 4 12" />
+//                             </svg>
+//                           </span>
+//                           {f}
+//                         </li>
+//                       ))}
+//                     </ul>
+
+//                     {isFeatured ? (
+//                       <a
+//                         href={`https://wa.me/${WHATSAPP_NUMBER}`}
+//                         target="_blank"
+//                         rel="noreferrer"
+//                         className="mp-btn-primary"
+//                       >
+//                         Subscribe Now →
+//                       </a>
+//                     ) : (
+//                       <a
+//                         href={`https://wa.me/${WHATSAPP_NUMBER}`}
+//                         target="_blank"
+//                         rel="noreferrer"
+//                         className="mp-btn-outline"
+//                       >
+//                         Select Plan
+//                       </a>
+//                     )}
+//                   </div>
+//                 </div>
+//               );
+//             })}
+//           </div>
+
+//           {/* Note */}
+//           <p className="mp-fade mp-fade-d5 mp-note">
+//             ✨ Fresh, less oil &amp; ghar jaisa taste · All plans include roti, rice, dal, sabzi &amp; salad daily
+//           </p>
+
+//           {/* ── TRIAL BANNER ── */}
+//           <div className="mp-fade mp-fade-d6">
+//             <div className="mp-trial">
+//               <div style={{ display: 'flex', alignItems: 'center', gap: 16, position: 'relative', zIndex: 1, flex: 1, minWidth: 0 }}>
+//                 <div style={{
+//                   width: 54, height: 54, flexShrink: 0,
+//                   background: 'linear-gradient(135deg,#FFF0E0,#FFE4CC)',
+//                   border: '1px solid rgba(255,107,44,0.2)',
+//                   borderRadius: 16,
+//                   display: 'flex', alignItems: 'center', justifyContent: 'center',
+//                   fontSize: 26,
+//                 }}>
+//                   🎁
+//                 </div>
+//                 <div style={{ minWidth: 0 }}>
+//                   <div style={{ fontFamily: "'Playfair Display',serif", fontSize: 'clamp(16px,2.5vw,20px)', fontWeight: 700, color: '#1A0A00', marginBottom: 3 }}>
+//                     Want to taste before subscribing?
+//                   </div>
+//                   <div style={{ fontSize: 13, color: '#9B7B6A' }}>
+//                     Try our 2-day trial meal — no commitment needed. 😊
+//                   </div>
+//                 </div>
+//               </div>
+//               <a
+//                 href={`https://wa.me/${WHATSAPP_NUMBER}`}
+//                 target="_blank"
+//                 rel="noreferrer"
+//                 className="mp-trial-btn"
+//                 style={{ position: 'relative', zIndex: 1 }}
+//               >
+//                 Book a Trial 🍲
+//                 <ChevronRight size={14} />
+//               </a>
+//             </div>
 //           </div>
 
 //         </div>
-//       </div>
-//     </section>
+//       </section>
+//     </>
 //   );
 // }
+
+
+
+
 
 
 
@@ -200,110 +760,90 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Leaf, Drumstick, CheckCircle2, Sparkles, Clock, Truck, Star } from 'lucide-react';
+import { Leaf, Drumstick, Sparkles, Clock, Truck, Star, ChevronRight } from 'lucide-react';
 
 const WHATSAPP_NUMBER = '+971557998925';
 
 /* ─────────────────────────────────────────────
-   DATA
+   WHATSAPP MESSAGE BUILDER
 ───────────────────────────────────────────── */
-const MEAL_PLANS = {
-  veg: {
-    icon: Leaf,
-    brand: 'Green Thali',
-    tagline: 'Pure vegetarian comfort, every day',
-    color: 'from-emerald-500 to-teal-600',
-    accent: '#10B981',
-    accentLight: 'rgba(16,185,129,0.12)',
-    accentGlow: 'rgba(16,185,129,0.35)',
-    badgeBg: 'linear-gradient(135deg,#10B981,#0D9488)',
-    badgeText: '#fff',
-    oneMeal: [
-      {
-        name: 'Basic Veg',
-        weekly: 99,
-        monthly: 380,
-        features: ['1 Sabzi + Dal', 'Rice or Roti (4 pcs)', 'Salad & Pickle', 'Mon – Sat Delivery'],
-      },
-      {
-        name: 'Premium Veg',
-        weekly: 130,
-        monthly: 499,
-        features: ['2 Sabzi + Dal', 'Rice + Roti (4 pcs)', 'Dessert (3x/week)', 'Salad, Pickle & Papad'],
-      },
-    ],
-    twoMeals: [
-      {
-        name: 'Starter Combo',
-        price: 699,
-        badge: null,
-        features: ['1 Sabzi + Dal (each meal)', 'Rice or Roti', 'Salad & Pickle', 'Mon – Sat'],
-      },
-      {
-        name: 'Family Combo',
-        price: 999,
-        badge: '⭐ Most Popular',
-        features: ['2 Sabzi + Dal (each meal)', 'Rice + Roti', 'Dessert 3x/week', 'Papad & Salad'],
-      },
-      {
-        name: 'Royal Thali',
-        price: 1299,
-        badge: null,
-        features: ['3 Sabzi + Dal + Soup', 'Rice + Roti (unlimited)', 'Daily Dessert', 'Chaach + Salad + Papad'],
-      },
-    ],
-  },
-  nonveg: {
-    icon: Drumstick,
-    brand: 'Nawabi Dastarkhwan',
-    tagline: 'Rich, bold, and deeply satisfying',
-    color: 'from-rose-500 to-orange-600',
-    accent: '#F43F5E',
-    accentLight: 'rgba(244,63,94,0.12)',
-    accentGlow: 'rgba(244,63,94,0.35)',
-    badgeBg: 'linear-gradient(135deg,#F43F5E,#EA580C)',
-    badgeText: '#fff',
-    oneMeal: [
-      {
-        name: 'Basic Non-Veg',
-        weekly: 120,
-        monthly: 450,
-        features: ['Chicken / Egg Curry', 'Rice or Roti (4 pcs)', 'Salad & Pickle', 'Mon – Sat Delivery'],
-      },
-      {
-        name: 'Premium Non-Veg',
-        weekly: 160,
-        monthly: 599,
-        features: ['Chicken + Dal / Sabzi', 'Rice + Roti (4 pcs)', 'Dessert (3x/week)', 'Salad, Pickle & Papad'],
-      },
-    ],
-    twoMeals: [
-      {
-        name: 'Starter Combo',
-        price: 899,
-        badge: null,
-        features: ['Chicken or Egg (each meal)', 'Rice or Roti', 'Salad & Pickle', 'Mon – Sat'],
-      },
-      {
-        name: 'Nawabi Combo',
-        price: 1299,
-        badge: '⭐ Most Popular',
-        features: ['Chicken + Dal / Sabzi', 'Rice + Roti', 'Dessert 3x/week', 'Papad & Salad'],
-      },
-      {
-        name: 'Shahenshah Thali',
-        price: 1699,
-        badge: null,
-        features: ['Chicken + Mutton + Gravy', 'Rice + Roti (unlimited)', 'Daily Dessert', 'Shorba + Salad + Raita'],
-      },
-    ],
-  },
-};
+function buildWhatsAppUrl(plan: {
+  tier: string;
+  type: 'Veg' | 'Non-Veg';
+  price: number;
+  features: string[];
+  isTrial?: boolean;
+}) {
+  const { tier, type, price, features, isTrial } = plan;
 
-/* ─────────────────────────────────────────────
-   HOOK: Intersection Observer
-───────────────────────────────────────────── */
-function useInView(threshold = 0.15) {
+  if (isTrial) {
+    const msg = [
+      `👋 Hello The Chef Mom!`,
+      ``,
+      `I'd like to book a *2-Day Trial Meal* before subscribing.`,
+      ``,
+      `Please share the trial details and delivery schedule.`,
+      ``,
+      `Thank you! 🙏`,
+    ].join('\n');
+    return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
+  }
+
+  const msg = [
+    `👋 Hello The Chef Mom!`,
+    ``,
+    `I'm interested in subscribing to the following meal plan:`,
+    ``,
+    `📦 *Plan:* ${tier} Plan (${type})`,
+    `💰 *Price:* AED ${price}/month`,
+    `🍽️ *Includes:*`,
+    ...features.map(f => `   • ${f}`),
+    ``,
+    `Please share payment details and delivery schedule.`,
+    ``,
+    `Thank you! 🙏`,
+  ].join('\n');
+
+  return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
+}
+
+const PLANS = [
+  {
+    tier: 'Basic',
+    badge: null,
+    vegPrice: 699,
+    nonvegPrice: 899,
+    color: '#FF6B2C',
+    features: {
+      veg: ['Roti (4 pcs) + Rice', 'Dal + 1 Sabzi', 'Salad & Pickle', 'Mon – Sat delivery'],
+      nonveg: ['Roti (4 pcs) + Rice', 'Chicken / Egg Curry', 'Salad & Pickle', 'Mon – Sat delivery'],
+    },
+  },
+  {
+    tier: 'Standard',
+    badge: '⭐ Most Preferred',
+    vegPrice: 749,
+    nonvegPrice: 949,
+    color: '#E84A1A',
+    features: {
+      veg: ['Roti (4 pcs) + Rice', 'Dal + 2 Sabzi', 'Salad, Pickle & Papad', 'Sweets (3×/week)', 'Mon – Sat delivery'],
+      nonveg: ['Roti (4 pcs) + Rice', 'Chicken Curry + Dal / Sabzi', 'Salad, Pickle & Papad', 'Sweets (3×/week)', 'Mon – Sat delivery'],
+    },
+  },
+  {
+    tier: 'Premium',
+    badge: null,
+    vegPrice: 849,
+    nonvegPrice: 1049,
+    color: '#C73A0F',
+    features: {
+      veg: ['Roti (unlimited) + Rice', 'Dal + 3 Sabzi + Soup', 'Salad, Pickle & Papad', 'Daily Dessert', 'Chaach included', 'Mon – Sat delivery'],
+      nonveg: ['Roti (unlimited) + Rice', 'Chicken + Special Dish', 'Salad, Pickle & Raita', 'Daily Dessert', 'Shorba included', 'Mon – Sat delivery'],
+    },
+  },
+];
+
+function useInView(threshold = 0.05) {
   const ref = useRef<HTMLDivElement>(null);
   const [inView, setInView] = useState(false);
   useEffect(() => {
@@ -317,13 +857,8 @@ function useInView(threshold = 0.15) {
   return { ref, inView };
 }
 
-/* ─────────────────────────────────────────────
-   MAIN COMPONENT
-───────────────────────────────────────────── */
 export default function MealPlans() {
   const [tab, setTab] = useState<'veg' | 'nonveg'>('veg');
-  const [hoveredCard, setHoveredCard] = useState<string | null>(null);
-  const data = MEAL_PLANS[tab];
   const { ref: sectionRef, inView } = useInView(0.05);
 
   return (
@@ -333,13 +868,11 @@ export default function MealPlans() {
 
         .mp-root {
           font-family: 'DM Sans', sans-serif;
-          background: linear-gradient(170deg, #FFF8F0 0%, #FFF0E0 40%, #FDF4FF 100%);
+          background: linear-gradient(170deg, #FFF8F0 0%, #FFF0E0 40%, #FFF5EB 100%);
           position: relative;
           overflow: hidden;
-          padding: 100px 0 120px;
+          padding: 80px 0 100px;
         }
-
-        /* ── Blob background ── */
         .mp-blob {
           position: absolute;
           border-radius: 50%;
@@ -353,8 +886,6 @@ export default function MealPlans() {
           40%      { transform: translate(40px,-30px) scale(1.07); }
           70%      { transform: translate(-25px,25px) scale(0.94); }
         }
-
-        /* ── Dot pattern ── */
         .mp-dots {
           position: absolute;
           inset: 0;
@@ -363,8 +894,18 @@ export default function MealPlans() {
           pointer-events: none;
           z-index: 0;
         }
-
-        /* ── Section label ── */
+        .mp-spice {
+          position: absolute;
+          opacity: 0.055;
+          pointer-events: none;
+          animation: mpSpinSlow 22s linear infinite;
+          z-index: 0;
+          display: none;
+        }
+        @keyframes mpSpinSlow {
+          from { transform: rotate(0deg); }
+          to   { transform: rotate(360deg); }
+        }
         .mp-eyebrow {
           display: inline-flex;
           align-items: center;
@@ -378,18 +919,16 @@ export default function MealPlans() {
           color: #FF6B2C;
           letter-spacing: 1.5px;
           text-transform: uppercase;
-          margin-bottom: 18px;
+          margin-bottom: 14px;
         }
-
-        /* ── Heading ── */
         .mp-heading {
           font-family: 'Playfair Display', serif;
-          font-size: clamp(36px, 5vw, 58px);
+          font-size: clamp(28px, 5vw, 54px);
           font-weight: 900;
           color: #1A0A00;
           line-height: 1.08;
           letter-spacing: -1px;
-          margin: 0 0 16px;
+          margin: 0 0 14px;
         }
         .mp-heading em {
           font-style: italic;
@@ -399,225 +938,226 @@ export default function MealPlans() {
         .mp-heading em::after {
           content: '';
           position: absolute;
-          bottom: 3px; left: 0; right: 0;
+          bottom: 2px; left: 0; right: 0;
           height: 3px;
           background: linear-gradient(90deg,#FF6B2C,#F5A623);
           border-radius: 2px;
           transform: scaleX(0);
           transform-origin: left;
-          transition: transform 1s cubic-bezier(.16,1,.3,1) 0.6s;
+          transition: transform 1s cubic-bezier(.16,1,.3,1) 0.5s;
         }
         .mp-root.visible .mp-heading em::after { transform: scaleX(1); }
-
-        /* ── Toggle ── */
-        .mp-toggle-wrap {
-          background: rgba(255,255,255,0.7);
-          backdrop-filter: blur(20px);
-          border: 1px solid rgba(255,107,44,0.18);
-          border-radius: 60px;
-          padding: 6px;
+        .mp-pill {
           display: inline-flex;
-          box-shadow: 0 8px 40px rgba(255,107,44,0.12);
+          align-items: center;
+          gap: 6px;
+          background: rgba(255,255,255,0.85);
+          backdrop-filter: blur(10px);
+          border: 1px solid rgba(255,107,44,0.18);
+          border-radius: 50px;
+          padding: 7px 14px;
+          font-size: 12px;
+          font-weight: 500;
+          color: #6B5344;
+          white-space: nowrap;
+        }
+        .mp-toggle-wrap {
+          background: rgba(255,255,255,0.75);
+          backdrop-filter: blur(20px);
+          border: 1px solid rgba(255,107,44,0.2);
+          border-radius: 60px;
+          padding: 5px;
+          display: inline-flex;
+          box-shadow: 0 8px 40px rgba(255,107,44,0.1);
         }
         .mp-toggle-btn {
           display: flex;
           align-items: center;
-          gap: 8px;
-          padding: 12px 28px;
+          gap: 7px;
+          padding: 10px 20px;
           border-radius: 50px;
           font-family: 'DM Sans', sans-serif;
-          font-size: 15px;
+          font-size: 14px;
           font-weight: 600;
           cursor: pointer;
           border: none;
           background: transparent;
           color: #9B7B6A;
           transition: all 0.35s cubic-bezier(.34,1.56,.64,1);
+          white-space: nowrap;
         }
-        .mp-toggle-btn.active-veg {
-          background: linear-gradient(135deg,#10B981,#0D9488);
+        .mp-toggle-btn.active {
+          background: linear-gradient(135deg,#FF6B2C,#E84A1A);
           color: #fff;
-          box-shadow: 0 6px 24px rgba(16,185,129,0.35);
-          transform: scale(1.02);
+          box-shadow: 0 6px 24px rgba(255,107,44,0.38);
+          transform: scale(1.03);
         }
-        .mp-toggle-btn.active-nonveg {
-          background: linear-gradient(135deg,#F43F5E,#EA580C);
-          color: #fff;
-          box-shadow: 0 6px 24px rgba(244,63,94,0.35);
-          transform: scale(1.02);
-        }
-
-        /* ── Divider label ── */
-        .mp-divider {
+        .mp-divider-row {
           display: flex;
           align-items: center;
-          gap: 16px;
-          margin: 0 0 36px;
+          gap: 14px;
+          margin-bottom: 28px;
         }
-        .mp-divider-line { flex: 1; height: 1px; background: rgba(26,10,0,0.08); }
-        .mp-divider-label {
-          font-size: 11px;
+        .mp-section-title {
+          font-family: 'Playfair Display', serif;
+          font-size: clamp(16px, 2.5vw, 20px);
+          font-weight: 700;
+          color: #1A0A00;
+          white-space: nowrap;
+        }
+        .mp-section-label {
+          font-size: 10px;
           font-weight: 700;
           letter-spacing: 2px;
           text-transform: uppercase;
           color: #9B7B6A;
           white-space: nowrap;
         }
-        .mp-divider-title {
-          font-family: 'Playfair Display', serif;
-          font-size: 22px;
-          font-weight: 700;
-          color: #1A0A00;
-          white-space: nowrap;
+        .mp-divider-line {
+          flex: 1;
+          height: 1px;
+          background: rgba(26,10,0,0.08);
+          min-width: 12px;
         }
-
-        /* ── ONE-MEAL CARDS ── */
-        .mp-card-1 {
+        .mp-cards-grid {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 20px;
+        }
+        .mp-card {
           background: #fff;
-          border-radius: 28px;
-          padding: 36px;
-          border: 1px solid rgba(26,10,0,0.07);
+          border-radius: 24px;
+          border: 1.5px solid rgba(26,10,0,0.07);
           position: relative;
           overflow: hidden;
-          transition: all 0.4s cubic-bezier(.34,1.56,.64,1);
-          cursor: default;
-        }
-        .mp-card-1::before {
-          content: '';
-          position: absolute;
-          top: 0; left: 0; right: 0;
-          height: 4px;
-          border-radius: 28px 28px 0 0;
-          transition: opacity 0.3s;
-        }
-        .mp-card-1:hover {
-          transform: translateY(-8px) scale(1.01);
-          box-shadow: 0 24px 60px rgba(26,10,0,0.12);
-        }
-        .mp-card-1-price-wrap {
-          display: flex;
-          gap: 28px;
-          align-items: flex-start;
-          padding: 24px 0;
-          margin: 24px 0;
-          border-top: 1px solid rgba(26,10,0,0.06);
-          border-bottom: 1px solid rgba(26,10,0,0.06);
-        }
-        .mp-price-block { flex: 1; }
-        .mp-price-sep { width: 1px; background: rgba(26,10,0,0.06); align-self: stretch; }
-        .mp-price-label {
-          font-size: 10px;
-          font-weight: 700;
-          letter-spacing: 1.5px;
-          text-transform: uppercase;
-          color: #9B7B6A;
-          margin-bottom: 4px;
-        }
-        .mp-price-val {
-          font-family: 'Playfair Display', serif;
-          font-size: 32px;
-          font-weight: 900;
-          color: #1A0A00;
-          line-height: 1;
-        }
-
-        /* ── TWO-MEAL CARDS ── */
-        .mp-card-2 {
-          background: #fff;
-          border-radius: 28px;
-          padding: 36px;
-          border: 1px solid rgba(26,10,0,0.07);
-          position: relative;
-          overflow: hidden;
-          transition: all 0.4s cubic-bezier(.34,1.56,.64,1);
+          transition: all 0.38s cubic-bezier(.34,1.56,.64,1);
           display: flex;
           flex-direction: column;
+          box-shadow: 0 4px 24px rgba(26,10,0,0.06);
         }
-        .mp-card-2:hover {
-          transform: translateY(-8px) scale(1.02);
-          box-shadow: 0 28px 70px rgba(26,10,0,0.14);
+        .mp-card:hover {
+          transform: translateY(-7px) scale(1.01);
+          box-shadow: 0 24px 60px rgba(26,10,0,0.12);
         }
-        .mp-card-2.featured {
-          transform: scale(1.04);
-          z-index: 2;
+        .mp-card.featured {
+          border-color: #FF6B2C;
+          box-shadow: 0 12px 48px rgba(255,107,44,0.18);
         }
-        .mp-card-2.featured:hover { transform: scale(1.06) translateY(-8px); }
-
-        /* ── Badge ── */
-        .mp-badge {
+        .mp-card.featured:hover {
+          box-shadow: 0 28px 70px rgba(255,107,44,0.26);
+        }
+        .mp-card-stripe {
+          height: 4px;
+          width: 100%;
+          flex-shrink: 0;
+        }
+        .mp-card.featured .mp-card-stripe { height: 5px; }
+        .mp-card-badge {
           position: absolute;
           top: 0;
           left: 50%;
           transform: translateX(-50%);
+          background: linear-gradient(135deg,#FF6B2C,#E84A1A);
           color: #fff;
-          font-size: 10px;
+          font-size: 9px;
           font-weight: 700;
           letter-spacing: 1.5px;
           text-transform: uppercase;
-          padding: 6px 18px;
-          border-radius: 0 0 14px 14px;
+          padding: 5px 16px;
+          border-radius: 0 0 12px 12px;
           white-space: nowrap;
         }
-
-        /* ── Feature list ── */
-        .mp-feature {
+        .mp-card-body {
+          padding: 26px 26px 24px;
+          display: flex;
+          flex-direction: column;
+          flex: 1;
+        }
+        .mp-tier-name {
+          font-family: 'Playfair Display', serif;
+          font-size: 21px;
+          font-weight: 700;
+          color: #1A0A00;
+          margin-bottom: 6px;
+          margin-top: 4px;
+        }
+        .mp-card.featured .mp-tier-name { margin-top: 16px; }
+        .mp-price {
+          font-family: 'Playfair Display', serif;
+          font-size: 40px;
+          font-weight: 900;
+          line-height: 1;
+          margin-bottom: 3px;
+        }
+        .mp-price-sub {
+          font-size: 12px;
+          color: #9B7B6A;
+          margin-bottom: 22px;
+        }
+        .mp-features {
+          list-style: none;
+          margin: 0 0 22px;
+          padding: 0;
+          flex: 1;
+        }
+        .mp-feature-item {
           display: flex;
           align-items: flex-start;
-          gap: 10px;
-          font-size: 14px;
+          gap: 9px;
+          font-size: 13px;
           color: #6B5344;
           font-weight: 500;
           line-height: 1.5;
-          padding: 6px 0;
+          padding: 5px 0;
         }
-        .mp-check {
+        .mp-check-icon {
           flex-shrink: 0;
           margin-top: 2px;
-          width: 18px;
-          height: 18px;
+          width: 16px;
+          height: 16px;
           border-radius: 50%;
           display: flex;
           align-items: center;
           justify-content: center;
         }
 
-        /* ── CTA Buttons ── */
+        /* ── Buttons ── */
         .mp-btn-primary {
-          display: block;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
           width: 100%;
-          padding: 15px;
+          padding: 13px;
           border-radius: 50px;
           border: none;
           font-family: 'DM Sans', sans-serif;
-          font-size: 15px;
+          font-size: 14px;
           font-weight: 700;
           color: #fff;
           cursor: pointer;
           text-align: center;
           text-decoration: none;
           transition: all 0.35s cubic-bezier(.34,1.56,.64,1);
-          position: relative;
-          overflow: hidden;
+          background: linear-gradient(135deg,#FF6B2C,#E84A1A);
+          box-shadow: 0 8px 24px rgba(255,107,44,0.3);
         }
-        .mp-btn-primary::after {
-          content: '';
-          position: absolute;
-          inset: 0;
-          background: rgba(255,255,255,0);
-          transition: background 0.3s;
+        .mp-btn-primary:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 14px 36px rgba(255,107,44,0.45);
         }
-        .mp-btn-primary:hover::after { background: rgba(255,255,255,0.1); }
-        .mp-btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 36px -4px var(--btn-glow,rgba(0,0,0,0.3)); }
-
         .mp-btn-outline {
-          display: block;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
           width: 100%;
-          padding: 15px;
+          padding: 13px;
           border-radius: 50px;
-          border: 1.5px solid rgba(26,10,0,0.12);
+          border: 1.5px solid rgba(26,10,0,0.14);
           background: transparent;
           font-family: 'DM Sans', sans-serif;
-          font-size: 15px;
+          font-size: 14px;
           font-weight: 600;
           color: #1A0A00;
           cursor: pointer;
@@ -626,110 +1166,149 @@ export default function MealPlans() {
           transition: all 0.3s ease;
         }
         .mp-btn-outline:hover {
-          border-color: rgba(26,10,0,0.35);
-          background: rgba(26,10,0,0.03);
+          border-color: #FF6B2C;
+          color: #FF6B2C;
+          background: rgba(255,107,44,0.04);
           transform: translateY(-2px);
         }
 
-        /* ── Trial Banner ── */
+        /* WhatsApp icon pulse on hover */
+        .mp-btn-primary:hover .mp-wa-icon,
+        .mp-btn-outline:hover .mp-wa-icon {
+          animation: mpWaPulse 0.5s ease;
+        }
+        @keyframes mpWaPulse {
+          0%   { transform: scale(1); }
+          40%  { transform: scale(1.25); }
+          100% { transform: scale(1); }
+        }
+
         .mp-trial {
           background: #fff;
           border: 1px solid rgba(255,107,44,0.2);
-          border-radius: 28px;
-          padding: 36px 44px;
-          margin-top: 64px;
+          border-radius: 24px;
+          padding: 28px;
+          margin-top: 52px;
           display: flex;
           align-items: center;
           justify-content: space-between;
-          gap: 24px;
+          gap: 20px;
           position: relative;
           overflow: hidden;
-          box-shadow: 0 8px 50px rgba(255,107,44,0.08);
+          box-shadow: 0 8px 50px rgba(255,107,44,0.07);
           flex-wrap: wrap;
         }
         .mp-trial::before {
           content: '';
           position: absolute;
-          top: -60px; right: -60px;
-          width: 220px; height: 220px;
+          top: -50px; right: -50px;
+          width: 180px; height: 180px;
           background: radial-gradient(circle,#FFD580,transparent 70%);
           opacity: 0.5;
           pointer-events: none;
         }
         .mp-trial-btn {
           flex-shrink: 0;
-          padding: 14px 32px;
+          padding: 13px 26px;
           border-radius: 50px;
           background: linear-gradient(135deg,#FF6B2C,#E84A1A);
           color: #fff;
           font-family: 'DM Sans', sans-serif;
-          font-size: 15px;
+          font-size: 14px;
           font-weight: 700;
           border: none;
           cursor: pointer;
           text-decoration: none;
-          display: inline-block;
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
           transition: all 0.35s cubic-bezier(.34,1.56,.64,1);
-          box-shadow: 0 8px 30px rgba(255,107,44,0.4);
+          box-shadow: 0 8px 28px rgba(255,107,44,0.4);
         }
         .mp-trial-btn:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 16px 40px rgba(255,107,44,0.5); }
 
-        /* ── Floating info badges ── */
-        .mp-float-info {
-          display: inline-flex;
-          align-items: center;
-          gap: 6px;
-          background: rgba(255,255,255,0.85);
-          backdrop-filter: blur(10px);
-          border: 1px solid rgba(255,107,44,0.18);
-          border-radius: 50px;
-          padding: 7px 16px;
-          font-size: 13px;
-          font-weight: 500;
-          color: #6B5344;
-        }
-
-        /* ── Fade-up animations on scroll ── */
-        .mp-fade { opacity: 0; transform: translateY(32px); transition: opacity 0.7s cubic-bezier(.16,1,.3,1), transform 0.7s cubic-bezier(.16,1,.3,1); }
+        .mp-fade { opacity: 0; transform: translateY(30px); transition: opacity 0.7s cubic-bezier(.16,1,.3,1), transform 0.7s cubic-bezier(.16,1,.3,1); }
         .mp-root.visible .mp-fade { opacity: 1; transform: translateY(0); }
-        .mp-fade-d1 { transition-delay: 0.1s; }
-        .mp-fade-d2 { transition-delay: 0.2s; }
-        .mp-fade-d3 { transition-delay: 0.3s; }
-        .mp-fade-d4 { transition-delay: 0.4s; }
-        .mp-fade-d5 { transition-delay: 0.5s; }
-        .mp-fade-d6 { transition-delay: 0.6s; }
-        .mp-fade-d7 { transition-delay: 0.7s; }
+        .mp-fade-d1 { transition-delay: 0.08s; }
+        .mp-fade-d2 { transition-delay: 0.16s; }
+        .mp-fade-d3 { transition-delay: 0.24s; }
+        .mp-fade-d4 { transition-delay: 0.32s; }
+        .mp-fade-d5 { transition-delay: 0.40s; }
+        .mp-fade-d6 { transition-delay: 0.52s; }
 
-        /* Tab-switch transition */
-        .mp-content { transition: opacity 0.25s ease; }
-        .mp-content.switching { opacity: 0; }
-
-        /* Glow ring on featured card */
-        .mp-card-2.featured::after {
-          content: '';
-          position: absolute;
-          inset: -2px;
-          border-radius: 30px;
-          padding: 2px;
-          background: var(--featured-grad);
-          -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-          -webkit-mask-composite: xor;
-          mask-composite: exclude;
-          pointer-events: none;
+        .mp-container {
+          max-width: 1200px;
+          margin: 0 auto;
+          padding: 0 16px;
+          position: relative;
+          z-index: 5;
+        }
+        .mp-pills-row {
+          display: flex;
+          justify-content: center;
+          gap: 8px;
+          flex-wrap: wrap;
+          margin-bottom: 28px;
+        }
+        .mp-note {
+          text-align: center;
+          font-size: 12px;
+          color: #9B7B6A;
+          margin-top: 16px;
+          line-height: 1.6;
         }
 
-        /* Spice deco */
-        .mp-spice {
-          position: absolute;
-          opacity: 0.055;
-          pointer-events: none;
-          font-size: 50px;
-          animation: mpSpinSlow 22s linear infinite;
-          z-index: 0;
+        /* ══ RESPONSIVE ══ */
+        @media (max-width: 360px) {
+          .mp-root { padding: 56px 0 72px; }
+          .mp-container { padding: 0 12px; }
+          .mp-toggle-btn { padding: 9px 12px; font-size: 12px; gap: 5px; }
+          .mp-card-body { padding: 20px 16px 18px; }
+          .mp-price { font-size: 32px; }
+          .mp-tier-name { font-size: 18px; }
+          .mp-trial { padding: 20px 16px; }
+          .mp-trial-btn { width: 100%; justify-content: center; }
+          .mp-heading { font-size: 26px; letter-spacing: -0.5px; }
+          .mp-section-label { display: none; }
         }
-        @keyframes mpSpinSlow {
-          from { transform: rotate(0deg); }
-          to   { transform: rotate(360deg); }
+        @media (min-width: 361px) and (max-width: 559px) {
+          .mp-root { padding: 64px 0 80px; }
+          .mp-container { padding: 0 14px; }
+          .mp-card-body { padding: 24px 20px 20px; }
+          .mp-price { font-size: 36px; }
+          .mp-trial-btn { width: 100%; justify-content: center; }
+          .mp-section-label { font-size: 9px; letter-spacing: 1px; }
+        }
+        @media (min-width: 560px) {
+          .mp-cards-grid { grid-template-columns: 1fr 1fr; }
+          .mp-card.featured {
+            grid-column: span 2;
+            max-width: 440px;
+            width: 100%;
+            margin: 0 auto;
+          }
+        }
+        @media (min-width: 768px) {
+          .mp-root { padding: 76px 0 96px; }
+          .mp-container { padding: 0 24px; }
+          .mp-toggle-btn { padding: 11px 24px; font-size: 15px; }
+        }
+        @media (min-width: 900px) {
+          .mp-root { padding: 90px 0 110px; }
+          .mp-container { padding: 0 32px; }
+          .mp-spice { display: block; }
+          .mp-cards-grid { grid-template-columns: repeat(3, 1fr); }
+          .mp-card.featured {
+            grid-column: auto;
+            max-width: none;
+            transform: scale(1.04);
+          }
+          .mp-card.featured:hover { transform: scale(1.06) translateY(-7px); }
+        }
+        @media (min-width: 1200px) {
+          .mp-container { padding: 0 48px; }
+          .mp-price { font-size: 44px; }
+          .mp-card-body { padding: 30px 30px 26px; }
         }
       `}</style>
 
@@ -738,208 +1317,92 @@ export default function MealPlans() {
         ref={sectionRef}
         className={`mp-root${inView ? ' visible' : ''}`}
       >
-        {/* Background */}
         <div className="mp-dots" />
         <div className="mp-blob" style={{ width: 500, height: 500, background: '#FFD580', top: -80, right: -100, animationDelay: '0s' }} />
         <div className="mp-blob" style={{ width: 380, height: 380, background: '#FF9F6B', bottom: 0, left: -80, animationDelay: '-4s' }} />
-        <div className="mp-blob" style={{ width: 280, height: 280, background: tab === 'veg' ? '#6EE7B7' : '#FDA4AF', top: '45%', left: '55%', animationDelay: '-7s', transition: 'background 0.6s' }} />
+        <div className="mp-blob" style={{ width: 280, height: 280, background: '#FFCFB0', top: '45%', left: '55%', animationDelay: '-7s' }} />
+        <div className="mp-spice" style={{ top: '18%', left: '4%', fontSize: 44 }}>🌶️</div>
+        <div className="mp-spice" style={{ bottom: '18%', right: '3%', fontSize: 56, animationDuration: '30s' }}>🍲</div>
 
-        {/* Spice decorations */}
-        <div className="mp-spice" style={{ top: '18%', left: '4%' }}>🌿</div>
-        <div className="mp-spice" style={{ bottom: '20%', right: '3%', fontSize: 64, animationDuration: '30s' }}>🍲</div>
-        <div className="mp-spice" style={{ top: '70%', left: '48%', fontSize: 32 }}>✦</div>
+        <div className="mp-container">
 
-        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 32px', position: 'relative', zIndex: 5 }}>
-
-          {/* ── HEADER ── */}
-          <div style={{ textAlign: 'center', marginBottom: 56 }}>
-            <div className="mp-fade mp-fade-d1" style={{ marginBottom: 12 }}>
-              <span className="mp-eyebrow">
-                <Sparkles size={12} />
-                Subscription Plans
-              </span>
+          {/* HEADER */}
+          <div style={{ textAlign: 'center', marginBottom: 40 }}>
+            <div className="mp-fade mp-fade-d1">
+              <span className="mp-eyebrow"><Sparkles size={11} /> Subscription Plans</span>
             </div>
             <h2 className="mp-heading mp-fade mp-fade-d2">
               Choose Your <em>Meal Plan</em>
             </h2>
-            <p className="mp-fade mp-fade-d3" style={{ fontSize: 16, color: '#9B7B6A', lineHeight: 1.7, marginBottom: 28 }}>
-              Handcrafted every morning, delivered fresh to your door.
+            <p className="mp-fade mp-fade-d3" style={{ fontSize: 15, color: '#9B7B6A', lineHeight: 1.7, margin: '0 auto 22px', maxWidth: 480 }}>
+              Handcrafted every morning by female home chefs — delivered fresh, 6 days a week.
             </p>
-
-            {/* Info pills */}
-            <div className="mp-fade mp-fade-d4" style={{ display: 'flex', justifyContent: 'center', gap: 10, flexWrap: 'wrap', marginBottom: 44 }}>
+            <div className="mp-fade mp-fade-d3 mp-pills-row">
               {[
-                { icon: <Clock size={13} />, text: '6 Days a Week' },
-                { icon: <Truck size={13} />, text: 'Free Delivery' },
-                { icon: <Star size={13} />, text: '26 Days / Month' },
+                { icon: <Clock size={12} />, text: '6 Days a Week' },
+                { icon: <Truck size={12} />, text: 'Free Delivery' },
+                { icon: <Star size={12} />, text: '26 Days / Month' },
               ].map(({ icon, text }) => (
-                <span key={text} className="mp-float-info">
-                  {icon} {text}
-                </span>
+                <span key={text} className="mp-pill">{icon} {text}</span>
               ))}
             </div>
-
-            {/* Toggle */}
-            <div className="mp-fade mp-fade-d5">
+            <div className="mp-fade mp-fade-d4">
               <div className="mp-toggle-wrap">
-                <button
-                  className={`mp-toggle-btn${tab === 'veg' ? ' active-veg' : ''}`}
-                  onClick={() => setTab('veg')}
-                >
-                  <Leaf size={17} /> Veg Plans
+                <button className={`mp-toggle-btn${tab === 'veg' ? ' active' : ''}`} onClick={() => setTab('veg')}>
+                  <Leaf size={15} /> Veg Plans
                 </button>
-                <button
-                  className={`mp-toggle-btn${tab === 'nonveg' ? ' active-nonveg' : ''}`}
-                  onClick={() => setTab('nonveg')}
-                >
-                  <Drumstick size={17} /> Non-Veg Plans
+                <button className={`mp-toggle-btn${tab === 'nonveg' ? ' active' : ''}`} onClick={() => setTab('nonveg')}>
+                  <Drumstick size={15} /> Non-Veg Plans
                 </button>
               </div>
             </div>
           </div>
 
-          {/* ── BRAND HEADER ── */}
-          <div className="mp-fade mp-fade-d5" style={{ display: 'flex', alignItems: 'center', gap: 18, marginBottom: 52 }}>
-            <div style={{
-              width: 56, height: 56, borderRadius: 16, flexShrink: 0,
-              background: data.accent,
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              boxShadow: `0 8px 28px ${data.accentGlow}`,
-              transition: 'background 0.4s, box-shadow 0.4s',
-            }}>
-              <data.icon size={28} color="#fff" />
-            </div>
-            <div>
-              <div style={{ fontFamily: "'Playfair Display',serif", fontSize: 24, fontWeight: 700, color: '#1A0A00', lineHeight: 1.1 }}>
-                {data.brand}
-              </div>
-              <div style={{ fontSize: 14, color: '#9B7B6A', marginTop: 2 }}>{data.tagline}</div>
-            </div>
+          {/* SECTION LABEL */}
+          <div className="mp-fade mp-fade-d4 mp-divider-row">
+            <span className="mp-section-title">2 Meals / Day</span>
+            <div className="mp-divider-line" />
+            <span className="mp-section-label">Monthly · Lunch &amp; Dinner</span>
           </div>
 
-          {/* ══ 1 MEAL / DAY ══ */}
-          <div className="mp-fade mp-fade-d5" style={{ marginBottom: 64 }}>
-            <div className="mp-divider" style={{ marginBottom: 32 }}>
-              <span className="mp-divider-title">1 Meal / Day</span>
-              <div className="mp-divider-line" />
-              <span className="mp-divider-label">Lunch OR Dinner</span>
-            </div>
+          {/* CARDS */}
+          <div className="mp-fade mp-fade-d5 mp-cards-grid">
+            {PLANS.map((plan) => {
+              const price    = tab === 'veg' ? plan.vegPrice : plan.nonvegPrice;
+              const features = plan.features[tab];
+              const isFeatured = !!plan.badge;
+              const waUrl = buildWhatsAppUrl({
+                tier: plan.tier,
+                type: tab === 'veg' ? 'Veg' : 'Non-Veg',
+                price,
+                features,
+              });
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(280px,1fr))', gap: 28 }}>
-              {data.oneMeal.map((plan, i) => (
-                <div
-                  key={plan.name}
-                  className="mp-card-1"
-                  style={{
-                    boxShadow: hoveredCard === `one-${i}` ? `0 24px 60px ${data.accentLight.replace('0.12','0.18')}` : '0 4px 24px rgba(26,10,0,0.06)',
-                  }}
-                  onMouseEnter={() => setHoveredCard(`one-${i}`)}
-                  onMouseLeave={() => setHoveredCard(null)}
-                >
-                  {/* Top color stripe */}
-                  <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 4, borderRadius: '28px 28px 0 0', background: `linear-gradient(90deg, ${data.accent}, ${tab === 'veg' ? '#F59E0B' : '#F97316'})` }} />
-
-                  {/* Name */}
-                  <div style={{ fontFamily: "'Playfair Display',serif", fontSize: 22, fontWeight: 700, color: '#1A0A00' }}>{plan.name}</div>
-
-                  {/* Pricing */}
-                  <div className="mp-card-1-price-wrap">
-                    <div className="mp-price-block">
-                      <div className="mp-price-label">Weekly</div>
-                      <div className="mp-price-val" style={{ fontSize: 26, color: '#1A0A00' }}>AED {plan.weekly}</div>
-                    </div>
-                    <div className="mp-price-sep" />
-                    <div className="mp-price-block">
-                      <div className="mp-price-label">Monthly</div>
-                      <div className="mp-price-val" style={{ color: data.accent }}>AED {plan.monthly}</div>
-                    </div>
-                  </div>
-
-                  {/* Features */}
-                  <ul style={{ listStyle: 'none', margin: '0 0 28px', padding: 0 }}>
-                    {plan.features.map(f => (
-                      <li key={f} className="mp-feature">
-                        <span className="mp-check" style={{ background: data.accentLight }}>
-                          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke={data.accent} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                            <polyline points="20 6 9 17 4 12" />
-                          </svg>
-                        </span>
-                        {f}
-                      </li>
-                    ))}
-                  </ul>
-
-                  <a
-                    href={`https://wa.me/${WHATSAPP_NUMBER}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="mp-btn-primary"
-                    style={{
-                      background: `linear-gradient(135deg, ${data.accent}, ${tab === 'veg' ? '#0D9488' : '#EA580C'})`,
-                      ['--btn-glow' as string]: data.accentGlow,
-                    }}
-                  >
-                    Subscribe Now →
-                  </a>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* ══ 2 MEALS / DAY ══ */}
-          <div className="mp-fade mp-fade-d6">
-            <div className="mp-divider" style={{ marginBottom: 40 }}>
-              <span className="mp-divider-title">2 Meals / Day</span>
-              <div className="mp-divider-line" />
-              <span className="mp-divider-label">Lunch &amp; Dinner</span>
-            </div>
-
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(260px,1fr))', gap: 28, alignItems: 'start' }}>
-              {data.twoMeals.map((plan, i) => {
-                const isFeatured = !!plan.badge;
-                return (
+              return (
+                <div key={plan.tier} className={`mp-card${isFeatured ? ' featured' : ''}`}>
                   <div
-                    key={plan.name}
-                    className={`mp-card-2${isFeatured ? ' featured' : ''}`}
-                    style={{
-                      border: isFeatured ? `2px solid ${data.accent}` : '1px solid rgba(26,10,0,0.07)',
-                      boxShadow: isFeatured
-                        ? `0 20px 60px ${data.accentLight.replace('0.12','0.22')}`
-                        : hoveredCard === `two-${i}` ? '0 20px 50px rgba(26,10,0,0.1)' : '0 4px 24px rgba(26,10,0,0.06)',
-                      ['--featured-grad' as string]: `linear-gradient(135deg, ${data.accent}, ${tab === 'veg' ? '#0D9488' : '#EA580C'})`,
-                    }}
-                    onMouseEnter={() => setHoveredCard(`two-${i}`)}
-                    onMouseLeave={() => setHoveredCard(null)}
-                  >
-                    {/* Top accent bar */}
-                    <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: isFeatured ? 5 : 3, borderRadius: '28px 28px 0 0', background: isFeatured ? `linear-gradient(90deg, ${data.accent}, ${tab === 'veg' ? '#F59E0B' : '#F97316'})` : 'rgba(26,10,0,0.06)' }} />
+                    className="mp-card-stripe"
+                    style={{ background: `linear-gradient(90deg, ${plan.color}, #F5A623)` }}
+                  />
+                  {isFeatured && <div className="mp-card-badge">{plan.badge}</div>}
 
-                    {/* Badge */}
-                    {isFeatured && (
-                      <div className="mp-badge" style={{ background: data.badgeBg }}>
-                        {plan.badge}
-                      </div>
-                    )}
-
-                    {/* Name */}
-                    <div style={{ fontFamily: "'Playfair Display',serif", fontSize: 20, fontWeight: 700, color: '#1A0A00', marginTop: isFeatured ? 24 : 8, marginBottom: 16 }}>
-                      {plan.name}
+                  <div className="mp-card-body">
+                    <div className="mp-tier-name">{plan.tier} Plan</div>
+                    <div className="mp-price" style={{ color: isFeatured ? plan.color : '#1A0A00' }}>
+                      AED {price}
                     </div>
+                    <div className="mp-price-sub">per month · 2 meals / day</div>
 
-                    {/* Price */}
-                    <div style={{ marginBottom: 28 }}>
-                      <span style={{ fontFamily: "'Playfair Display',serif", fontSize: 40, fontWeight: 900, color: isFeatured ? data.accent : '#1A0A00', lineHeight: 1 }}>
-                        AED {plan.price}
-                      </span>
-                      <span style={{ fontSize: 14, color: '#9B7B6A', marginLeft: 6 }}>/month</span>
-                    </div>
-
-                    {/* Features */}
-                    <ul style={{ listStyle: 'none', margin: '0 0 28px', padding: 0, flex: 1 }}>
-                      {plan.features.map(f => (
-                        <li key={f} className="mp-feature">
-                          <span className="mp-check" style={{ background: isFeatured ? data.accentLight : 'rgba(26,10,0,0.05)' }}>
-                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke={isFeatured ? data.accent : '#9B7B6A'} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                    <ul className="mp-features">
+                      {features.map((f) => (
+                        <li key={f} className="mp-feature-item">
+                          <span
+                            className="mp-check-icon"
+                            style={{ background: isFeatured ? 'rgba(255,107,44,0.1)' : 'rgba(26,10,0,0.05)' }}
+                          >
+                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none"
+                              stroke={isFeatured ? plan.color : '#9B7B6A'}
+                              strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                               <polyline points="20 6 9 17 4 12" />
                             </svg>
                           </span>
@@ -948,68 +1411,67 @@ export default function MealPlans() {
                       ))}
                     </ul>
 
+                    {/* Button with WhatsApp icon + pre-filled message */}
                     {isFeatured ? (
-                      <a
-                        href={`https://wa.me/${WHATSAPP_NUMBER}`}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="mp-btn-primary"
-                        style={{
-                          background: `linear-gradient(135deg, ${data.accent}, ${tab === 'veg' ? '#0D9488' : '#EA580C'})`,
-                          ['--btn-glow' as string]: data.accentGlow,
-                        }}
-                      >
-                        Select Plan →
+                      <a href={waUrl} target="_blank" rel="noreferrer" className="mp-btn-primary">
+                        <svg className="mp-wa-icon" width="16" height="16" viewBox="0 0 24 24" fill="white">
+                          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                        </svg>
+                        Subscribe Now
                       </a>
                     ) : (
-                      <a
-                        href={`https://wa.me/${WHATSAPP_NUMBER}`}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="mp-btn-outline"
-                      >
+                      <a href={waUrl} target="_blank" rel="noreferrer" className="mp-btn-outline">
+                        <svg className="mp-wa-icon" width="15" height="15" viewBox="0 0 24 24" fill="#25D366">
+                          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                        </svg>
                         Select Plan
                       </a>
                     )}
                   </div>
-                );
-              })}
-            </div>
+                </div>
+              );
+            })}
           </div>
 
-          {/* ══ TRIAL BANNER ══ */}
-          <div className="mp-fade mp-fade-d7">
+          <p className="mp-fade mp-fade-d5 mp-note">
+            ✨ Fresh, less oil &amp; ghar jaisa taste · All plans include roti, rice, dal, sabzi &amp; salad daily
+          </p>
+
+          {/* TRIAL BANNER */}
+          <div className="mp-fade mp-fade-d6">
             <div className="mp-trial">
-              <div style={{ display: 'flex', alignItems: 'center', gap: 20, position: 'relative', zIndex: 1 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 16, position: 'relative', zIndex: 1, flex: 1, minWidth: 0 }}>
                 <div style={{
-                  width: 64, height: 64,
-                  background: 'linear-gradient(135deg,#FFF0E0,#FFECD2)',
+                  width: 54, height: 54, flexShrink: 0,
+                  background: 'linear-gradient(135deg,#FFF0E0,#FFE4CC)',
                   border: '1px solid rgba(255,107,44,0.2)',
-                  borderRadius: 20,
+                  borderRadius: 16,
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontSize: 30,
-                  flexShrink: 0,
+                  fontSize: 26,
                 }}>
                   🎁
                 </div>
-                <div>
-                  <div style={{ fontFamily: "'Playfair Display',serif", fontSize: 22, fontWeight: 700, color: '#1A0A00', marginBottom: 4 }}>
+                <div style={{ minWidth: 0 }}>
+                  <div style={{ fontFamily: "'Playfair Display',serif", fontSize: 'clamp(16px,2.5vw,20px)', fontWeight: 700, color: '#1A0A00', marginBottom: 3 }}>
                     Want to taste before subscribing?
                   </div>
-                  <div style={{ fontSize: 15, color: '#9B7B6A' }}>
-                    Try our 2-day trial meal — no commitment needed.
+                  <div style={{ fontSize: 13, color: '#9B7B6A' }}>
+                    Try our 2-day trial meal — no commitment needed. 😊
                   </div>
                 </div>
               </div>
-
               <a
-                href={`https://wa.me/${WHATSAPP_NUMBER}`}
+                href={buildWhatsAppUrl({ tier: 'Trial', type: 'Veg', price: 0, features: [], isTrial: true })}
                 target="_blank"
                 rel="noreferrer"
                 className="mp-trial-btn"
                 style={{ position: 'relative', zIndex: 1 }}
               >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="white">
+                  <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                </svg>
                 Book a Trial 🍲
+                <ChevronRight size={14} />
               </a>
             </div>
           </div>

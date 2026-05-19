@@ -2824,7 +2824,7 @@ export default function FounderSection() {
                     <span className="fs-brand-dot nonveg" />
                     <div>
                       <div className="fs-brand-label nonveg">🍗 Non-Vegetarian</div>
-                      <div className="fs-brand-name">Currytales</div>
+                      <div className="fs-brand-name">Curry Craft</div>
                       <div className="fs-brand-desc">Non-veg by our partner brand</div>
                     </div>
                   </div>

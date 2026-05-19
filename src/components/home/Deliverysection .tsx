@@ -29,7 +29,7 @@ const STEPS = [
     anim: 'basket',
   },
   {
-    id: 2, icon: '🔥', label: 'Home Cooking',
+    id: 2, icon: '🔥', label: 'Commercial Kitchen',
     desc: 'Prepared by Hema with love & no preservatives',
     color: '#FF6B2C', light: '#FFF0E8',
     anim: 'flame',

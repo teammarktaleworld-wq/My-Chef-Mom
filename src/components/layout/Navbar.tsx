@@ -911,7 +911,7 @@ interface NavbarProps {
 }
 
 const NAV_LINKS = [
-  { label: 'About Us',    href: '#about' },
+  
   { label: 'Our Founder', href: '#founder' },
   { label: 'Meal Plans',  href: '#meal-plans' },
   { label: 'How It Works',href: '#how-it-works' },

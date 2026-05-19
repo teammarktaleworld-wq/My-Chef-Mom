@@ -1350,10 +1350,651 @@
 
 
 
+// 'use client';
+
+// import React, { useState, useEffect, useRef, useCallback } from 'react';
+// import { Leaf, Drumstick, Sparkles, Clock, Truck, Star, ChevronRight, Gift, Flame } from 'lucide-react';
+
+// const WHATSAPP_NUMBER = '+971557998925';
+
+// /* ─────────────────────────────────────────────
+//    WHATSAPP MESSAGE BUILDER
+// ───────────────────────────────────────────── */
+// function buildWhatsAppUrl(plan: {
+//   tier: string; type: 'Veg' | 'Non-Veg'; price: number;
+//   duration: 'weekly' | 'monthly'; features: string[]; isTrial?: boolean;
+// }) {
+//   const { tier, type, price, duration, features, isTrial } = plan;
+//   if (isTrial) {
+//     const msg = [`👋 Hello The Chef Mom!`, ``, `I'd like to book a *2-Day Trial Meal* before subscribing.`, ``, `Please share the trial details and delivery schedule.`, ``, `Thank you! 🙏`].join('\n');
+//     return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
+//   }
+//   const msg = [
+//     `👋 Hello The Chef Mom!`, ``,
+//     `I'm interested in subscribing to the following meal plan:`, ``,
+//     `📦 *Plan:* ${tier} (${type})`,
+//     `💰 *Price:* AED ${price}/${duration === 'weekly' ? 'week' : 'month'}`,
+//     `🍽️ *Includes:*`,
+//     ...features.map(f => `   • ${f}`), ``,
+//     `Please share payment details and delivery schedule.`, ``,
+//     `Thank you! 🙏`,
+//   ].join('\n');
+//   return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
+// }
+
+// /* ─────────────────────────────────────────────
+//    PLAN DATA — using local /chefmom/ images
+// ───────────────────────────────────────────── */
+// const ONE_MEAL_PLANS = [
+//   {
+//     tier: 'Half Meal', badge: null,
+//     weekly: { veg: 119, nonveg: 157 }, monthly: { veg: 449, nonveg: 625 },
+//     color: '#FF6B2C',
+//     // same image for both tabs — swap if you have separate veg/non-veg shots
+//     image: {
+//       veg:    '/chefmom/Basic plan week.png',
+//       nonveg: '/chefmom/Basic plan week.png',
+//     },
+//     features: {
+//       veg:    ['1 Dal / Curry', '1 Dry Sabzi', '3 Roti or Rice', 'Salad'],
+//       nonveg: ['1 Chicken/Mutton Curry', '1 Dry Sabzi', '3 Roti or Rice', 'Salad'],
+//     },
+//     featured: false,
+//   },
+//   {
+//     tier: 'Full Meal', badge: '⭐ Best Value',
+//     weekly: { veg: 135, nonveg: 169 }, monthly: { veg: 549, nonveg: 689 },
+//     color: '#FF6B2C',
+//     image: {
+//       veg:    '/chefmom/Basic plan.png',
+//       nonveg: '/chefmom/Basic plan.png',
+//     },
+//     features: {
+//       veg:    ['1 Dal / Curry', '1 Dry Sabzi', '4 Roti & Rice', 'Salad & Dessert'],
+//       nonveg: ['1 Chicken/Mutton Curry', '1 Dry Sabzi', '4 Roti & Rice', 'Salad & Dessert'],
+//     },
+//     featured: true,
+//   },
+// ];
+
+// const TWO_MEAL_PLANS = [
+//   {
+//     tier: 'Basic Plan', badge: null,
+//     monthly: { veg: 769, nonveg: 949 },
+//     color: '#FF6B2C',
+//     image: {
+//       veg:    '/chefmom/Basic plan.png',
+//       nonveg: '/chefmom/Basic plan.png',
+//     },
+//     features: {
+//       veg:    ['2 Meals / Day', 'Standard Menu', 'Roti, Rice, Dal, Sabzi, Salad'],
+//       nonveg: ['2 Meals / Day', 'Standard Menu', 'Chicken 3x a week, Dal, Roti'],
+//     },
+//     featured: false,
+//   },
+//   {
+//     tier: 'Standard Plan', badge: '⭐ Most Preferred',
+//     monthly: { veg: 849, nonveg: 1049 },
+//     color: '#FF6B2C',
+//     image: {
+//       veg:    '/chefmom/Standard plan.png',
+//       nonveg: '/chefmom/Standard plan week.png',
+//     },
+//     features: {
+//       veg:    ['2 Meals / Day', 'Premium Menu', 'Includes Sweets', 'Flexible Delivery'],
+//       nonveg: ['2 Meals / Day', 'Premium Menu', 'Chicken/Mutton', 'Includes Sweets'],
+//     },
+//     featured: true,
+//   },
+//   {
+//     tier: 'Premium Plan', badge: null,
+//     monthly: { veg: 1049, nonveg: 1249 },
+//     color: '#FF6B2C',
+//     image: {
+//       veg:    '/chefmom/Premium-Meal.png',
+//       nonveg: '/chefmom/Premium-Meal weak.png',
+//     },
+//     features: {
+//       veg:    ['2 Meals / Day', 'Deluxe Menu', 'Special Weekend Dishes', 'Customizable portions'],
+//       nonveg: ['2 Meals / Day', 'Deluxe Menu', 'Special Weekend Dishes', 'Customizable portions'],
+//     },
+//     featured: false,
+//   },
+// ];
+
+// /* ─────────────────────────────────────────────
+//    HOOKS
+// ───────────────────────────────────────────── */
+// function useInView(threshold = 0.05) {
+//   const ref = useRef<HTMLDivElement>(null);
+//   const [inView, setInView] = useState(false);
+//   useEffect(() => {
+//     const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) setInView(true); }, { threshold });
+//     if (ref.current) obs.observe(ref.current);
+//     return () => obs.disconnect();
+//   }, [threshold]);
+//   return { ref, inView };
+// }
+
+// /* ─────────────────────────────────────────────
+//    FLOATING PARTICLES CANVAS
+// ───────────────────────────────────────────── */
+// function ParticleCanvas() {
+//   const canvasRef = useRef<HTMLCanvasElement>(null);
+//   useEffect(() => {
+//     const canvas = canvasRef.current;
+//     if (!canvas) return;
+//     const ctx = canvas.getContext('2d');
+//     if (!ctx) return;
+//     let raf: number;
+//     const resize = () => { canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight; };
+//     resize();
+//     window.addEventListener('resize', resize);
+//     type Particle = { x: number; y: number; r: number; vx: number; vy: number; alpha: number; color: string };
+//     const particles: Particle[] = Array.from({ length: 48 }, () => ({
+//       x: Math.random() * canvas.width,
+//       y: Math.random() * canvas.height,
+//       r: Math.random() * 3.5 + 0.8,
+//       vx: (Math.random() - 0.5) * 0.32,
+//       vy: -(Math.random() * 0.5 + 0.1),
+//       alpha: Math.random() * 0.45 + 0.1,
+//       color: Math.random() > 0.5 ? '#FF6B2C' : '#F5A623',
+//     }));
+//     const draw = () => {
+//       ctx.clearRect(0, 0, canvas.width, canvas.height);
+//       particles.forEach(p => {
+//         ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+//         ctx.fillStyle = p.color; ctx.globalAlpha = p.alpha; ctx.fill();
+//         p.x += p.vx; p.y += p.vy;
+//         if (p.y < -10) { p.y = canvas.height + 10; p.x = Math.random() * canvas.width; }
+//         if (p.x < -10) p.x = canvas.width + 10;
+//         if (p.x > canvas.width + 10) p.x = -10;
+//       });
+//       ctx.globalAlpha = 1;
+//       raf = requestAnimationFrame(draw);
+//     };
+//     draw();
+//     return () => { cancelAnimationFrame(raf); window.removeEventListener('resize', resize); };
+//   }, []);
+//   return (
+//     <canvas ref={canvasRef} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: 1 }} />
+//   );
+// }
+
+// /* ─────────────────────────────────────────────
+//    SHIMMER EFFECT — runs over the image on hover
+// ───────────────────────────────────────────── */
+// function ShimmerOverlay({ active }: { active: boolean }) {
+//   return (
+//     <div
+//       style={{
+//         position: 'absolute', inset: 0, borderRadius: '50%', overflow: 'hidden',
+//         pointerEvents: 'none', zIndex: 3,
+//         opacity: active ? 1 : 0,
+//         transition: 'opacity 0.3s ease',
+//       }}
+//     >
+//       <div style={{
+//         position: 'absolute', top: 0, left: '-100%', width: '60%', height: '100%',
+//         background: 'linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.35) 50%, transparent 60%)',
+//         animation: active ? 'shimmerSlide 0.7s ease forwards' : 'none',
+//       }} />
+//     </div>
+//   );
+// }
+
+// /* ─────────────────────────────────────────────
+//    THALI MEAL CARD
+// ───────────────────────────────────────────── */
+// function ThaliMealCard({
+//   plan, priceVal, features, waUrl, mealType, delay, imageSrc, totalMeals
+// }: {
+//   plan: any; priceVal: number; features: string[];
+//   waUrl: string; mealType: string; delay: number; imageSrc: string; totalMeals: number;
+// }) {
+//   const [hovered, setHovered]   = useState(false);
+//   const [revealed, setRevealed] = useState(false);
+//   const [imgKey,   setImgKey]   = useState(imageSrc);
+
+//   // reset shimmer when image src changes (tab switch)
+//   useEffect(() => { setImgKey(imageSrc); }, [imageSrc]);
+
+//   useEffect(() => {
+//     const t = setTimeout(() => setRevealed(true), delay);
+//     return () => clearTimeout(t);
+//   }, [delay]);
+
+//   const perMealPrice = Math.round(priceVal / totalMeals);
+
+//   return (
+//     <div
+//       className="flex flex-col items-center text-center p-4 relative"
+//       onMouseEnter={() => setHovered(true)}
+//       onMouseLeave={() => setHovered(false)}
+//       style={{
+//         opacity: revealed ? 1 : 0,
+//         transform: revealed ? 'translateY(0)' : 'translateY(40px)',
+//         transition: `opacity 0.7s cubic-bezier(.16,1,.3,1) ${delay}ms, transform 0.7s cubic-bezier(.16,1,.3,1) ${delay}ms`,
+//       }}
+//     >
+//       {/* Badge */}
+//       {plan.badge && (
+//         <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-yellow-400 text-[#1A0A00] font-black text-xs px-4 py-1.5 rounded-full shadow-md z-20 whitespace-nowrap">
+//           {plan.badge}
+//         </div>
+//       )}
+
+//       {/* ── Image wrapper with all animations ── */}
+//       <div
+//         className="relative mb-6"
+//         style={{
+//           animation: 'floatThali 6s ease-in-out infinite',
+//           animationDelay: `${(delay % 3) * 0.8}s`,
+//         }}
+//       >
+//         {/* Glowing ring behind plate */}
+//         <div
+//           style={{
+//             position: 'absolute', inset: '-12px', borderRadius: '50%', zIndex: 0,
+//             background: 'radial-gradient(circle, rgba(255,107,44,0.22) 0%, transparent 70%)',
+//             transform: hovered ? 'scale(1.18)' : 'scale(1)',
+//             transition: 'transform 0.5s ease',
+//             filter: hovered ? 'blur(0px)' : 'blur(2px)',
+//           }}
+//         />
+
+//         {/* Dashed orbit ring */}
+//         <div
+//           style={{
+//             position: 'absolute', inset: '-6px', borderRadius: '50%', zIndex: 1,
+//             border: '3px dashed rgba(255,107,44,0.55)',
+//             animation: hovered ? 'orbitSpin 4s linear infinite' : 'orbitSpin 18s linear infinite',
+//             transition: 'animation-duration 0.8s ease',
+//           }}
+//         />
+
+//         {/* Inner padding ring */}
+//         <div
+//           style={{
+//             position: 'relative', zIndex: 2, padding: '6px', borderRadius: '50%',
+//             background: hovered
+//               ? 'linear-gradient(135deg, #FFF4ED 0%, #FFE0CC 100%)'
+//               : 'transparent',
+//             transition: 'background 0.4s ease',
+//             boxShadow: hovered ? '0 0 30px rgba(255,107,44,0.25)' : 'none',
+//           }}
+//         >
+//           <div style={{ position: 'relative', width: 200, height: 200 }}>
+//             <img
+//               key={imgKey}
+//               src={imageSrc}
+//               alt={plan.tier}
+//               style={{
+//                 width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover',
+//                 boxShadow: '0 12px 40px rgba(0,0,0,0.18)',
+//                 transform: hovered ? 'scale(1.07)' : 'scale(1)',
+//                 transition: 'transform 0.5s cubic-bezier(.34,1.56,.64,1)',
+//                 animation: 'imgReveal 0.5s ease',
+//               }}
+//             />
+//             {/* Shimmer flash */}
+//             <ShimmerOverlay active={hovered} />
+//           </div>
+//         </div>
+
+//         {/* Orbiting dot */}
+//         <div
+//           style={{
+//             position: 'absolute', top: '50%', left: '50%', zIndex: 4,
+//             width: 212, height: 212, marginLeft: -106, marginTop: -106,
+//             animation: hovered ? 'orbitDot 2s linear infinite' : 'orbitDot 6s linear infinite',
+//             pointerEvents: 'none',
+//             transition: 'animation-duration 0.6s ease',
+//           }}
+//         >
+//           <div style={{
+//             position: 'absolute', top: -5, left: '50%',
+//             width: 10, height: 10, borderRadius: '50%',
+//             background: '#FF6B2C',
+//             boxShadow: '0 0 8px #FF6B2C',
+//             transform: 'translateX(-50%)',
+//           }} />
+//         </div>
+
+//         {/* Price tag */}
+//         <div
+//           className="absolute -top-2 -right-6 z-10"
+//           style={{
+//             background: 'linear-gradient(135deg, #FF6B2C, #E55A1F)',
+//             color: '#fff', padding: '8px 14px',
+//             borderRadius: '4px',
+//             fontWeight: 800, fontSize: 11,
+//             boxShadow: '0 4px 14px rgba(255,107,44,0.45)',
+//             transform: hovered ? 'rotate(10deg) scale(1.08)' : 'rotate(16deg) scale(1)',
+//             transition: 'transform 0.4s cubic-bezier(.34,1.56,.64,1)',
+//             display: 'flex', alignItems: 'center', gap: 6,
+//           }}
+//         >
+//           <div style={{ width: 6, height: 6, background: '#fff', borderRadius: '50%', opacity: 0.8 }} />
+//           <div style={{ border: '1px dashed rgba(255,255,255,0.6)', padding: '3px 8px', borderRadius: 3 }}>
+//             {perMealPrice} AED/Meal
+//           </div>
+//         </div>
+//       </div>
+
+//       {/* Title */}
+//       <h3 className="text-2xl md:text-3xl font-black text-[#2A3342] mb-3" style={{ fontFamily: "'Outfit', sans-serif" }}>
+//         {plan.tier}
+//       </h3>
+
+//       {/* Features */}
+//       <p className="text-[#64748B] text-sm md:text-base font-medium max-w-[280px] leading-relaxed mb-6 min-h-[60px]">
+//         {features.join(', ')}
+//       </p>
+
+//       {/* CTA */}
+//       <a
+//         href={waUrl} target="_blank" rel="noreferrer"
+//         className="w-full max-w-[280px] text-white rounded-2xl py-3.5 px-6 flex flex-col items-center justify-center"
+//         style={{
+//           background: 'linear-gradient(135deg, #FF6B2C 0%, #E84F00 100%)',
+//           transition: 'all 0.3s ease',
+//           boxShadow: hovered ? '0 12px 30px rgba(255,107,44,0.5)' : '0 4px 15px rgba(255,107,44,0.25)',
+//           transform: hovered ? 'translateY(-3px)' : 'translateY(0)',
+//         }}
+//       >
+//         <span className="text-xl md:text-2xl font-black">
+//           AED {priceVal} <span className="text-sm font-medium opacity-90">/ {mealType}</span>
+//         </span>
+//         <span className="text-sm font-bold uppercase tracking-wider mt-0.5 flex items-center gap-1">
+//           Order Now <ChevronRight size={16} />
+//         </span>
+//       </a>
+//     </div>
+//   );
+// }
+
+// /* ─────────────────────────────────────────────
+//    MAIN COMPONENT
+// ───────────────────────────────────────────── */
+// export default function MealPlans() {
+//   const [foodTab, setFoodTab]   = useState<'veg' | 'nonveg'>('veg');
+//   const [durTab,  setDurTab]    = useState<'weekly' | 'monthly'>('weekly');
+//   const [toggling, setToggling] = useState(false);
+//   const { ref: sectionRef, inView } = useInView(0.05);
+
+//   const handleFoodTab = (val: 'veg' | 'nonveg') => {
+//     if (val === foodTab) return;
+//     setToggling(true); setTimeout(() => { setFoodTab(val); setToggling(false); }, 240);
+//   };
+//   const handleDurTab = (val: 'weekly' | 'monthly') => {
+//     if (val === durTab) return;
+//     setToggling(true); setTimeout(() => { setDurTab(val); setToggling(false); }, 240);
+//   };
+
+//   return (
+//     <>
+//       <style dangerouslySetInnerHTML={{__html: `
+//         @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,600;0,800;1,700&family=Outfit:wght@300;400;500;700;900&display=swap');
+
+//         .mp-root *, .mp-root *::before, .mp-root *::after { box-sizing: border-box; }
+
+//         .mp-root {
+//           font-family: 'Outfit', sans-serif;
+//           background: #FCFAF6;
+//           position: relative; overflow: hidden; padding: 60px 0 80px;
+//           -webkit-tap-highlight-color: transparent;
+//         }
+
+//         /* ── Dot grid ── */
+//         .mp-dots {
+//           position: absolute; inset: 0;
+//           background-image: radial-gradient(circle, rgba(255,107,44,0.1) 1.5px, transparent 1.5px);
+//           background-size: 28px 28px; pointer-events: none; z-index: 0;
+//           animation: mpDotsPulse 6s ease-in-out infinite;
+//         }
+//         @keyframes mpDotsPulse { 0%,100% { opacity:1; } 50% { opacity:0.5; } }
+
+//         /* ── Blobs ── */
+//         .mp-blob {
+//           position: absolute; border-radius: 50%;
+//           filter: blur(80px); opacity: 0.15; pointer-events: none;
+//           animation: mpBlobDrift 15s ease-in-out infinite alternate;
+//         }
+//         @keyframes mpBlobDrift {
+//           0%   { transform: translate(0,0) scale(1); }
+//           100% { transform: translate(50px,-30px) scale(1.1); }
+//         }
+
+//         /* ── Orbit ring spin ── */
+//         @keyframes orbitSpin {
+//           from { transform: rotate(0deg); }
+//           to   { transform: rotate(360deg); }
+//         }
+
+//         /* ── Orbiting dot ── */
+//         @keyframes orbitDot {
+//           from { transform: rotate(0deg); }
+//           to   { transform: rotate(360deg); }
+//         }
+
+//         /* ── Card float ── */
+//         @keyframes floatThali {
+//           0%,100% { transform: translateY(0px); }
+//           50%     { transform: translateY(-14px); }
+//         }
+
+//         /* ── Image swap reveal ── */
+//         @keyframes imgReveal {
+//           0%   { opacity:0; transform: scale(0.92); }
+//           100% { opacity:1; transform: scale(1); }
+//         }
+
+//         /* ── Shimmer slide ── */
+//         @keyframes shimmerSlide {
+//           0%   { left: -100%; }
+//           100% { left: 160%; }
+//         }
+
+//         /* ── Container ── */
+//         .mp-container { max-width: 1200px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 5; width: 100%; }
+
+//         /* ── Heading ── */
+//         .mp-heading {
+//           font-family: 'Fraunces', serif; font-size: clamp(32px,6vw,56px);
+//           font-weight: 800; color: #1A0A00; line-height: 1.1;
+//           letter-spacing: -0.5px; margin: 0 0 16px;
+//         }
+
+//         /* ── Toggles ── */
+//         .mp-toggles-wrap { display: flex; flex-direction: column; align-items: center; gap: 16px; margin-bottom: 48px; }
+//         .mp-toggle-group { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+//         .mp-toggle-group-label { font-size: 11px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; color: #94A3B8; }
+//         .mp-toggle-wrap {
+//           background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 60px; padding: 6px;
+//           display: inline-flex; box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+//         }
+//         .mp-toggle-btn {
+//           display: flex; align-items: center; gap: 8px; padding: 10px 24px; border-radius: 50px;
+//           font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 700;
+//           cursor: pointer; border: none; background: transparent; color: #64748B;
+//           transition: all 0.3s ease; white-space: nowrap; outline: none;
+//         }
+//         .mp-toggle-btn.active { background: #FF6B2C; color: #fff; box-shadow: 0 4px 15px rgba(255,107,44,0.3); }
+//         .mp-toggle-btn:not(.active):hover { background: #F8FAFC; color: #1E293B; }
+
+//         /* ── Section divider ── */
+//         .mp-divider-row { display: flex; align-items: center; gap: 16px; margin: 40px 0 32px; justify-content: center; }
+//         .mp-section-title { font-family: 'Fraunces', serif; font-size: 24px; font-weight: 800; color: #1E293B; }
+//         .mp-divider-line { flex: 1; height: 1px; background: #E2E8F0; max-width: 200px; }
+
+//         /* ── Grids ── */
+//         .mp-grid {
+//           display: grid; grid-template-columns: 1fr; gap: 40px;
+//           transition: opacity 0.3s ease, transform 0.3s ease;
+//         }
+//         @media (min-width: 768px) {
+//           .mp-grid { grid-template-columns: repeat(2, 1fr); gap: 24px; }
+//           .mp-toggles-wrap { flex-direction: row; gap: 32px; justify-content: center; }
+//         }
+//         @media (min-width: 1024px) { .mp-grid.three-col { grid-template-columns: repeat(3, 1fr); } }
+
+//         .mp-cards-toggling { opacity: 0; transform: translateY(10px); }
+//         .mp-cards-ready    { opacity: 1; transform: translateY(0); }
+
+//         /* ── Trial banner ── */
+//         .mp-trial {
+//           background: #fff; border: 1px solid #E2E8F0; border-radius: 32px;
+//           padding: 24px 32px; margin-top: 64px;
+//           display: flex; align-items: center; justify-content: space-between; gap: 24px;
+//           box-shadow: 0 10px 40px rgba(0,0,0,0.03); flex-wrap: wrap; text-align: left;
+//         }
+//         .mp-trial-btn {
+//           padding: 14px 28px; border-radius: 50px;
+//           background: linear-gradient(135deg, #FF6B2C, #E84F00); color: #fff; font-weight: 800;
+//           text-decoration: none; display: inline-flex; align-items: center; gap: 8px;
+//           transition: all 0.3s ease; white-space: nowrap;
+//         }
+//         .mp-trial-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(255,107,44,0.35); }
+
+//         @media (max-width: 640px) {
+//           .mp-trial { flex-direction: column; text-align: center; justify-content: center; padding: 24px; }
+//           .mp-trial-btn { width: 100%; justify-content: center; }
+//         }
+//       `}} />
+
+//       <section id="meal-plans" ref={sectionRef} className="mp-root">
+
+//         <div className="mp-dots" />
+//         <ParticleCanvas />
+//         <div className="mp-blob" style={{ width: 500, height: 500, background: '#FFD580', top: -100, right: -150 }} />
+//         <div className="mp-blob" style={{ width: 400, height: 400, background: '#FF9F6B', bottom: -50, left: -100, animationDelay: '-5s' }} />
+
+//         <div className="mp-container">
+
+//           {/* HEADER */}
+//           <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+//             <h2 className="mp-heading" style={{ opacity: inView ? 1 : 0, transform: inView ? 'translateY(0)' : 'translateY(20px)', transition: 'all 0.6s ease' }}>
+//               Choose Your Meal Plan
+//             </h2>
+//             <div className="flex justify-center items-center gap-4 flex-wrap text-[#64748B] font-medium text-sm" style={{ opacity: inView ? 1 : 0, transition: 'all 0.6s ease 0.2s' }}>
+//               <span className="flex items-center gap-1.5"><Clock size={16} className="text-[#FF6B2C]" /> 6 Days / Week</span>
+//               <span className="hidden sm:block">•</span>
+//               <span className="flex items-center gap-1.5"><Truck size={16} className="text-[#FF6B2C]" /> Free Delivery</span>
+//               <span className="hidden sm:block">•</span>
+//               <span className="flex items-center gap-1.5"><Star size={16} className="text-[#FF6B2C]" /> 26 Days / Month</span>
+//             </div>
+//           </div>
+
+//           {/* TOGGLES */}
+//           <div className="mp-toggles-wrap" style={{ opacity: inView ? 1 : 0, transition: 'all 0.6s ease 0.3s' }}>
+//             <div className="mp-toggle-group">
+//               <span className="mp-toggle-group-label">Diet Preference</span>
+//               <div className="mp-toggle-wrap">
+//                 <button className={`mp-toggle-btn${foodTab === 'veg' ? ' active' : ''}`} onClick={() => handleFoodTab('veg')}><Leaf size={16} /> Veg</button>
+//                 <button className={`mp-toggle-btn${foodTab === 'nonveg' ? ' active' : ''}`} onClick={() => handleFoodTab('nonveg')}><Drumstick size={16} /> Non-Veg</button>
+//               </div>
+//             </div>
+//             <div className="mp-toggle-group">
+//               <span className="mp-toggle-group-label">Billing Cycle</span>
+//               <div className="mp-toggle-wrap">
+//                 <button className={`mp-toggle-btn${durTab === 'weekly' ? ' active' : ''}`} onClick={() => handleDurTab('weekly')}>Weekly</button>
+//                 <button className={`mp-toggle-btn${durTab === 'monthly' ? ' active' : ''}`} onClick={() => handleDurTab('monthly')}>Monthly</button>
+//               </div>
+//             </div>
+//           </div>
+
+//           {/* 1 MEAL / DAY */}
+//           <div className="mp-divider-row" style={{ opacity: inView ? 1 : 0, transition: 'all 0.6s ease 0.4s' }}>
+//             <div className="mp-divider-line hidden md:block" />
+//             <span className="mp-section-title">1 Meal / Day <span className="text-sm font-medium text-[#94A3B8] ml-2 font-sans tracking-normal">(Lunch OR Dinner)</span></span>
+//             <div className="mp-divider-line hidden md:block" />
+//           </div>
+
+//           <div className={`mp-grid two-col max-w-4xl mx-auto ${toggling ? 'mp-cards-toggling' : 'mp-cards-ready'}`}>
+//             {ONE_MEAL_PLANS.map((plan, i) => {
+//               const priceVal   = durTab === 'weekly' ? plan.weekly[foodTab] : plan.monthly[foodTab];
+//               const features   = plan.features[foodTab];
+//               const totalMeals = durTab === 'weekly' ? 6 : 26;
+//               const imageSrc   = plan.image[foodTab];
+//               const waUrl      = buildWhatsAppUrl({ tier: `${plan.tier} – 1 Meal/Day`, type: foodTab === 'veg' ? 'Veg' : 'Non-Veg', price: priceVal, duration: durTab, features });
+//               return (
+//                 <ThaliMealCard key={plan.tier} plan={plan} priceVal={priceVal} features={features} waUrl={waUrl}
+//                   mealType={durTab === 'weekly' ? 'week' : 'month'} delay={inView ? i * 100 : 9999}
+//                   imageSrc={imageSrc} totalMeals={totalMeals} />
+//               );
+//             })}
+//           </div>
+
+//           {/* 2 MEALS / DAY */}
+//           <div className="mp-divider-row" style={{ marginTop: '64px', opacity: inView ? 1 : 0, transition: 'all 0.6s ease 0.5s' }}>
+//             <div className="mp-divider-line hidden md:block" />
+//             <span className="mp-section-title">2 Meals / Day <span className="text-sm font-medium text-[#94A3B8] ml-2 font-sans tracking-normal">(Lunch & Dinner)</span></span>
+//             <div className="mp-divider-line hidden md:block" />
+//           </div>
+
+//           {durTab === 'weekly' && (
+//             <p className="text-center text-[#FF6B2C] font-bold text-sm mb-6 animate-pulse">
+//               * 2-meal plans are available on a monthly basis only.
+//             </p>
+//           )}
+
+//           <div className={`mp-grid three-col ${toggling ? 'mp-cards-toggling' : 'mp-cards-ready'}`}>
+//             {TWO_MEAL_PLANS.map((plan, i) => {
+//               const priceVal = plan.monthly[foodTab];
+//               const features = plan.features[foodTab];
+//               const imageSrc = plan.image[foodTab];
+//               const waUrl    = buildWhatsAppUrl({ tier: `${plan.tier} – 2 Meals/Day`, type: foodTab === 'veg' ? 'Veg' : 'Non-Veg', price: priceVal, duration: 'monthly', features });
+//               return (
+//                 <ThaliMealCard key={plan.tier} plan={plan} priceVal={priceVal} features={features} waUrl={waUrl}
+//                   mealType="month" delay={inView ? i * 150 : 9999}
+//                   imageSrc={imageSrc} totalMeals={52} />
+//               );
+//             })}
+//           </div>
+
+//           {/* TRIAL BANNER */}
+//           <div className="mp-trial" style={{ opacity: inView ? 1 : 0, transform: inView ? 'translateY(0)' : 'translateY(20px)', transition: 'all 0.6s ease 0.8s' }}>
+//             <div className="flex items-center gap-6">
+//               <div className="w-16 h-16 bg-[#FFF4ED] border border-[#FF6B2C]/20 rounded-2xl flex items-center justify-center text-3xl shadow-inner flex-shrink-0">🎁</div>
+//               <div>
+//                 <h4 className="text-xl font-black text-[#1E293B] mb-1">Want to taste before subscribing?</h4>
+//                 <p className="text-[#64748B] font-medium text-sm">
+//                   2-Day Trial · Veg AED 25 · Non-Veg AED 28. <br className="sm:hidden" /> No commitment needed 😊
+//                 </p>
+//               </div>
+//             </div>
+//             <a href={buildWhatsAppUrl({ tier: 'Trial', type: 'Veg', price: 0, duration: 'weekly', features: [], isTrial: true })}
+//               target="_blank" rel="noreferrer" className="mp-trial-btn">
+//               Book a Trial 🍲 <ChevronRight size={18} />
+//             </a>
+//           </div>
+
+//         </div>
+//       </section>
+//     </>
+//   );
+// }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 'use client';
 
-import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Leaf, Drumstick, Sparkles, Clock, Truck, Star, ChevronRight, Gift, Flame } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Leaf, Drumstick, Clock, Truck, Star, ChevronRight } from 'lucide-react';
 
 const WHATSAPP_NUMBER = '+971557998925';
 
@@ -1383,37 +2024,26 @@ function buildWhatsAppUrl(plan: {
 }
 
 /* ─────────────────────────────────────────────
-   PLAN DATA — using local /chefmom/ images
+   PLAN DATA
 ───────────────────────────────────────────── */
 const ONE_MEAL_PLANS = [
   {
     tier: 'Half Meal', badge: null,
     weekly: { veg: 119, nonveg: 157 }, monthly: { veg: 449, nonveg: 625 },
-    color: '#FF6B2C',
-    // same image for both tabs — swap if you have separate veg/non-veg shots
-    image: {
-      veg:    '/chefmom/Basic plan week.png',
-      nonveg: '/chefmom/Basic plan week.png',
-    },
+    image: { veg: '/chefmom/Basic plan week.png', nonveg: '/chefmom/Basic plan week.png' },
     features: {
       veg:    ['1 Dal / Curry', '1 Dry Sabzi', '3 Roti or Rice', 'Salad'],
       nonveg: ['1 Chicken/Mutton Curry', '1 Dry Sabzi', '3 Roti or Rice', 'Salad'],
     },
-    featured: false,
   },
   {
     tier: 'Full Meal', badge: '⭐ Best Value',
     weekly: { veg: 135, nonveg: 169 }, monthly: { veg: 549, nonveg: 689 },
-    color: '#FF6B2C',
-    image: {
-      veg:    '/chefmom/Basic plan.png',
-      nonveg: '/chefmom/Basic plan.png',
-    },
+    image: { veg: '/chefmom/Basic plan.png', nonveg: '/chefmom/Basic plan.png' },
     features: {
       veg:    ['1 Dal / Curry', '1 Dry Sabzi', '4 Roti & Rice', 'Salad & Dessert'],
       nonveg: ['1 Chicken/Mutton Curry', '1 Dry Sabzi', '4 Roti & Rice', 'Salad & Dessert'],
     },
-    featured: true,
   },
 ];
 
@@ -1421,60 +2051,31 @@ const TWO_MEAL_PLANS = [
   {
     tier: 'Basic Plan', badge: null,
     monthly: { veg: 769, nonveg: 949 },
-    color: '#FF6B2C',
-    image: {
-      veg:    '/chefmom/Basic plan.png',
-      nonveg: '/chefmom/Basic plan.png',
-    },
+    image: { veg: '/chefmom/Basic plan.png', nonveg: '/chefmom/Basic plan.png' },
     features: {
       veg:    ['2 Meals / Day', 'Standard Menu', 'Roti, Rice, Dal, Sabzi, Salad'],
       nonveg: ['2 Meals / Day', 'Standard Menu', 'Chicken 3x a week, Dal, Roti'],
     },
-    featured: false,
   },
   {
     tier: 'Standard Plan', badge: '⭐ Most Preferred',
     monthly: { veg: 849, nonveg: 1049 },
-    color: '#FF6B2C',
-    image: {
-      veg:    '/chefmom/Standard plan.png',
-      nonveg: '/chefmom/Standard plan week.png',
-    },
+    image: { veg: '/chefmom/Standard plan.png', nonveg: '/chefmom/Standard plan week.png' },
     features: {
       veg:    ['2 Meals / Day', 'Premium Menu', 'Includes Sweets', 'Flexible Delivery'],
       nonveg: ['2 Meals / Day', 'Premium Menu', 'Chicken/Mutton', 'Includes Sweets'],
     },
-    featured: true,
   },
   {
     tier: 'Premium Plan', badge: null,
     monthly: { veg: 1049, nonveg: 1249 },
-    color: '#FF6B2C',
-    image: {
-      veg:    '/chefmom/Premium-Meal.png',
-      nonveg: '/chefmom/Premium-Meal weak.png',
-    },
+    image: { veg: '/chefmom/Premium-Meal.png', nonveg: '/chefmom/Premium-Meal weak.png' },
     features: {
       veg:    ['2 Meals / Day', 'Deluxe Menu', 'Special Weekend Dishes', 'Customizable portions'],
       nonveg: ['2 Meals / Day', 'Deluxe Menu', 'Special Weekend Dishes', 'Customizable portions'],
     },
-    featured: false,
   },
 ];
-
-/* ─────────────────────────────────────────────
-   HOOKS
-───────────────────────────────────────────── */
-function useInView(threshold = 0.05) {
-  const ref = useRef<HTMLDivElement>(null);
-  const [inView, setInView] = useState(false);
-  useEffect(() => {
-    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) setInView(true); }, { threshold });
-    if (ref.current) obs.observe(ref.current);
-    return () => obs.disconnect();
-  }, [threshold]);
-  return { ref, inView };
-}
 
 /* ─────────────────────────────────────────────
    FLOATING PARTICLES CANVAS
@@ -1490,19 +2091,16 @@ function ParticleCanvas() {
     const resize = () => { canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight; };
     resize();
     window.addEventListener('resize', resize);
-    type Particle = { x: number; y: number; r: number; vx: number; vy: number; alpha: number; color: string };
-    const particles: Particle[] = Array.from({ length: 48 }, () => ({
-      x: Math.random() * canvas.width,
-      y: Math.random() * canvas.height,
-      r: Math.random() * 3.5 + 0.8,
-      vx: (Math.random() - 0.5) * 0.32,
-      vy: -(Math.random() * 0.5 + 0.1),
-      alpha: Math.random() * 0.45 + 0.1,
+    type P = { x: number; y: number; r: number; vx: number; vy: number; alpha: number; color: string };
+    const ps: P[] = Array.from({ length: 48 }, () => ({
+      x: Math.random() * canvas.width, y: Math.random() * canvas.height,
+      r: Math.random() * 3.5 + 0.8, vx: (Math.random() - 0.5) * 0.32,
+      vy: -(Math.random() * 0.5 + 0.1), alpha: Math.random() * 0.45 + 0.1,
       color: Math.random() > 0.5 ? '#FF6B2C' : '#F5A623',
     }));
     const draw = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      particles.forEach(p => {
+      ps.forEach(p => {
         ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
         ctx.fillStyle = p.color; ctx.globalAlpha = p.alpha; ctx.fill();
         p.x += p.vx; p.y += p.vy;
@@ -1516,200 +2114,137 @@ function ParticleCanvas() {
     draw();
     return () => { cancelAnimationFrame(raf); window.removeEventListener('resize', resize); };
   }, []);
-  return (
-    <canvas ref={canvasRef} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: 1 }} />
-  );
-}
-
-/* ─────────────────────────────────────────────
-   SHIMMER EFFECT — runs over the image on hover
-───────────────────────────────────────────── */
-function ShimmerOverlay({ active }: { active: boolean }) {
-  return (
-    <div
-      style={{
-        position: 'absolute', inset: 0, borderRadius: '50%', overflow: 'hidden',
-        pointerEvents: 'none', zIndex: 3,
-        opacity: active ? 1 : 0,
-        transition: 'opacity 0.3s ease',
-      }}
-    >
-      <div style={{
-        position: 'absolute', top: 0, left: '-100%', width: '60%', height: '100%',
-        background: 'linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.35) 50%, transparent 60%)',
-        animation: active ? 'shimmerSlide 0.7s ease forwards' : 'none',
-      }} />
-    </div>
-  );
+  return <canvas ref={canvasRef} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: 1 }} />;
 }
 
 /* ─────────────────────────────────────────────
    THALI MEAL CARD
+   ✅ No internal reveal state — visibility is
+      controlled purely via CSS class from parent
 ───────────────────────────────────────────── */
 function ThaliMealCard({
-  plan, priceVal, features, waUrl, mealType, delay, imageSrc, totalMeals
+  plan, priceVal, features, waUrl, mealType, animIndex, imageSrc, totalMeals,
 }: {
-  plan: any; priceVal: number; features: string[];
-  waUrl: string; mealType: string; delay: number; imageSrc: string; totalMeals: number;
+  plan: { tier: string; badge: string | null };
+  priceVal: number; features: string[];
+  waUrl: string; mealType: string;
+  animIndex: number; imageSrc: string; totalMeals: number;
 }) {
-  const [hovered, setHovered]   = useState(false);
-  const [revealed, setRevealed] = useState(false);
-  const [imgKey,   setImgKey]   = useState(imageSrc);
-
-  // reset shimmer when image src changes (tab switch)
-  useEffect(() => { setImgKey(imageSrc); }, [imageSrc]);
-
-  useEffect(() => {
-    const t = setTimeout(() => setRevealed(true), delay);
-    return () => clearTimeout(t);
-  }, [delay]);
-
+  const [hovered, setHovered] = useState(false);
   const perMealPrice = Math.round(priceVal / totalMeals);
 
   return (
     <div
-      className="flex flex-col items-center text-center p-4 relative"
+      className="mp-card-item"
+      style={{ animationDelay: `${animIndex * 120}ms` }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      style={{
-        opacity: revealed ? 1 : 0,
-        transform: revealed ? 'translateY(0)' : 'translateY(40px)',
-        transition: `opacity 0.7s cubic-bezier(.16,1,.3,1) ${delay}ms, transform 0.7s cubic-bezier(.16,1,.3,1) ${delay}ms`,
-      }}
     >
-      {/* Badge */}
-      {plan.badge && (
-        <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-yellow-400 text-[#1A0A00] font-black text-xs px-4 py-1.5 rounded-full shadow-md z-20 whitespace-nowrap">
-          {plan.badge}
-        </div>
-      )}
+      <div className="flex flex-col items-center text-center p-4 relative">
 
-      {/* ── Image wrapper with all animations ── */}
-      <div
-        className="relative mb-6"
-        style={{
-          animation: 'floatThali 6s ease-in-out infinite',
-          animationDelay: `${(delay % 3) * 0.8}s`,
-        }}
-      >
-        {/* Glowing ring behind plate */}
-        <div
-          style={{
+        {/* Badge */}
+        {plan.badge && (
+          <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-yellow-400 text-[#1A0A00] font-black text-xs px-4 py-1.5 rounded-full shadow-md z-20 whitespace-nowrap">
+            {plan.badge}
+          </div>
+        )}
+
+        {/* Image + orbit ring */}
+        <div className="relative mb-6" style={{ animation: `floatThali 6s ease-in-out ${animIndex * 0.8}s infinite` }}>
+          {/* Glow */}
+          <div style={{
             position: 'absolute', inset: '-12px', borderRadius: '50%', zIndex: 0,
             background: 'radial-gradient(circle, rgba(255,107,44,0.22) 0%, transparent 70%)',
             transform: hovered ? 'scale(1.18)' : 'scale(1)',
             transition: 'transform 0.5s ease',
             filter: hovered ? 'blur(0px)' : 'blur(2px)',
-          }}
-        />
-
-        {/* Dashed orbit ring */}
-        <div
-          style={{
+          }} />
+          {/* Orbit ring */}
+          <div style={{
             position: 'absolute', inset: '-6px', borderRadius: '50%', zIndex: 1,
             border: '3px dashed rgba(255,107,44,0.55)',
             animation: hovered ? 'orbitSpin 4s linear infinite' : 'orbitSpin 18s linear infinite',
-            transition: 'animation-duration 0.8s ease',
-          }}
-        />
-
-        {/* Inner padding ring */}
-        <div
-          style={{
+          }} />
+          {/* Inner */}
+          <div style={{
             position: 'relative', zIndex: 2, padding: '6px', borderRadius: '50%',
-            background: hovered
-              ? 'linear-gradient(135deg, #FFF4ED 0%, #FFE0CC 100%)'
-              : 'transparent',
+            background: hovered ? 'linear-gradient(135deg,#FFF4ED,#FFE0CC)' : 'transparent',
             transition: 'background 0.4s ease',
             boxShadow: hovered ? '0 0 30px rgba(255,107,44,0.25)' : 'none',
-          }}
-        >
-          <div style={{ position: 'relative', width: 200, height: 200 }}>
+          }}>
             <img
-              key={imgKey}
               src={imageSrc}
               alt={plan.tier}
               style={{
-                width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover',
+                width: 200, height: 200, borderRadius: '50%', objectFit: 'cover',
                 boxShadow: '0 12px 40px rgba(0,0,0,0.18)',
                 transform: hovered ? 'scale(1.07)' : 'scale(1)',
                 transition: 'transform 0.5s cubic-bezier(.34,1.56,.64,1)',
-                animation: 'imgReveal 0.5s ease',
+                display: 'block',
               }}
             />
-            {/* Shimmer flash */}
-            <ShimmerOverlay active={hovered} />
           </div>
-        </div>
-
-        {/* Orbiting dot */}
-        <div
-          style={{
+          {/* Orbiting dot */}
+          <div style={{
             position: 'absolute', top: '50%', left: '50%', zIndex: 4,
             width: 212, height: 212, marginLeft: -106, marginTop: -106,
             animation: hovered ? 'orbitDot 2s linear infinite' : 'orbitDot 6s linear infinite',
             pointerEvents: 'none',
-            transition: 'animation-duration 0.6s ease',
-          }}
-        >
-          <div style={{
-            position: 'absolute', top: -5, left: '50%',
-            width: 10, height: 10, borderRadius: '50%',
-            background: '#FF6B2C',
-            boxShadow: '0 0 8px #FF6B2C',
-            transform: 'translateX(-50%)',
-          }} />
-        </div>
-
-        {/* Price tag */}
-        <div
-          className="absolute -top-2 -right-6 z-10"
-          style={{
-            background: 'linear-gradient(135deg, #FF6B2C, #E55A1F)',
-            color: '#fff', padding: '8px 14px',
-            borderRadius: '4px',
-            fontWeight: 800, fontSize: 11,
+          }}>
+            <div style={{
+              position: 'absolute', top: -5, left: '50%',
+              width: 10, height: 10, borderRadius: '50%',
+              background: '#FF6B2C', boxShadow: '0 0 8px #FF6B2C',
+              transform: 'translateX(-50%)',
+            }} />
+          </div>
+          {/* Price tag */}
+          <div className="absolute -top-2 -right-6 z-10" style={{
+            background: 'linear-gradient(135deg,#FF6B2C,#E55A1F)', color: '#fff',
+            padding: '8px 14px', borderRadius: '4px', fontWeight: 800, fontSize: 11,
             boxShadow: '0 4px 14px rgba(255,107,44,0.45)',
             transform: hovered ? 'rotate(10deg) scale(1.08)' : 'rotate(16deg) scale(1)',
             transition: 'transform 0.4s cubic-bezier(.34,1.56,.64,1)',
             display: 'flex', alignItems: 'center', gap: 6,
-          }}
-        >
-          <div style={{ width: 6, height: 6, background: '#fff', borderRadius: '50%', opacity: 0.8 }} />
-          <div style={{ border: '1px dashed rgba(255,255,255,0.6)', padding: '3px 8px', borderRadius: 3 }}>
-            {perMealPrice} AED/Meal
+          }}>
+            <div style={{ width: 6, height: 6, background: '#fff', borderRadius: '50%', opacity: 0.8 }} />
+            <div style={{ border: '1px dashed rgba(255,255,255,0.6)', padding: '3px 8px', borderRadius: 3 }}>
+              {perMealPrice} AED/Meal
+            </div>
           </div>
         </div>
+
+        {/* Title */}
+        <h3 style={{ fontFamily: "'Outfit',sans-serif", fontSize: 'clamp(20px,3vw,28px)', fontWeight: 900, color: '#2A3342', marginBottom: 12 }}>
+          {plan.tier}
+        </h3>
+
+        {/* Features */}
+        <p style={{ color: '#64748B', fontSize: 14, fontWeight: 500, maxWidth: 280, lineHeight: 1.7, marginBottom: 24, minHeight: 60 }}>
+          {features.join(', ')}
+        </p>
+
+        {/* CTA */}
+        <a
+          href={waUrl} target="_blank" rel="noreferrer"
+          style={{
+            width: '100%', maxWidth: 280, color: '#fff', borderRadius: 16,
+            padding: '14px 24px', display: 'flex', flexDirection: 'column',
+            alignItems: 'center', justifyContent: 'center', textDecoration: 'none',
+            background: 'linear-gradient(135deg,#FF6B2C 0%,#E84F00 100%)',
+            transition: 'all 0.3s ease',
+            boxShadow: hovered ? '0 12px 30px rgba(255,107,44,0.5)' : '0 4px 15px rgba(255,107,44,0.25)',
+            transform: hovered ? 'translateY(-3px)' : 'translateY(0)',
+          }}
+        >
+          <span style={{ fontSize: 'clamp(18px,3vw,24px)', fontWeight: 900 }}>
+            AED {priceVal} <span style={{ fontSize: 13, fontWeight: 500, opacity: 0.9 }}>/ {mealType}</span>
+          </span>
+          <span style={{ fontSize: 12, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', marginTop: 2, display: 'flex', alignItems: 'center', gap: 4 }}>
+            Order Now <ChevronRight size={14} />
+          </span>
+        </a>
       </div>
-
-      {/* Title */}
-      <h3 className="text-2xl md:text-3xl font-black text-[#2A3342] mb-3" style={{ fontFamily: "'Outfit', sans-serif" }}>
-        {plan.tier}
-      </h3>
-
-      {/* Features */}
-      <p className="text-[#64748B] text-sm md:text-base font-medium max-w-[280px] leading-relaxed mb-6 min-h-[60px]">
-        {features.join(', ')}
-      </p>
-
-      {/* CTA */}
-      <a
-        href={waUrl} target="_blank" rel="noreferrer"
-        className="w-full max-w-[280px] text-white rounded-2xl py-3.5 px-6 flex flex-col items-center justify-center"
-        style={{
-          background: 'linear-gradient(135deg, #FF6B2C 0%, #E84F00 100%)',
-          transition: 'all 0.3s ease',
-          boxShadow: hovered ? '0 12px 30px rgba(255,107,44,0.5)' : '0 4px 15px rgba(255,107,44,0.25)',
-          transform: hovered ? 'translateY(-3px)' : 'translateY(0)',
-        }}
-      >
-        <span className="text-xl md:text-2xl font-black">
-          AED {priceVal} <span className="text-sm font-medium opacity-90">/ {mealType}</span>
-        </span>
-        <span className="text-sm font-bold uppercase tracking-wider mt-0.5 flex items-center gap-1">
-          Order Now <ChevronRight size={16} />
-        </span>
-      </a>
     </div>
   );
 }
@@ -1718,100 +2253,101 @@ function ThaliMealCard({
    MAIN COMPONENT
 ───────────────────────────────────────────── */
 export default function MealPlans() {
-  const [foodTab, setFoodTab]   = useState<'veg' | 'nonveg'>('veg');
-  const [durTab,  setDurTab]    = useState<'weekly' | 'monthly'>('weekly');
-  const [toggling, setToggling] = useState(false);
-  const { ref: sectionRef, inView } = useInView(0.05);
+  const [foodTab, setFoodTab] = useState<'veg' | 'nonveg'>('veg');
+  const [durTab,  setDurTab]  = useState<'weekly' | 'monthly'>('weekly');
+  const [inView,  setInView]  = useState(false);
+  const [gridKey, setGridKey] = useState(0); // forces grid re-animation on tab switch
+  const sectionRef = useRef<HTMLDivElement>(null);
+
+  /* IntersectionObserver — fires once when section enters viewport */
+  useEffect(() => {
+    const el = sectionRef.current;
+    if (!el) return;
+    // If section is already in viewport on mount (e.g. after reload), fire immediately
+    const rect = el.getBoundingClientRect();
+    if (rect.top < window.innerHeight && rect.bottom > 0) {
+      setInView(true);
+      return;
+    }
+    const obs = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) { setInView(true); obs.disconnect(); } },
+      { threshold: 0.05, rootMargin: '0px 0px -40px 0px' }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
 
   const handleFoodTab = (val: 'veg' | 'nonveg') => {
     if (val === foodTab) return;
-    setToggling(true); setTimeout(() => { setFoodTab(val); setToggling(false); }, 240);
+    setFoodTab(val);
+    setGridKey(k => k + 1);
   };
   const handleDurTab = (val: 'weekly' | 'monthly') => {
     if (val === durTab) return;
-    setToggling(true); setTimeout(() => { setDurTab(val); setToggling(false); }, 240);
+    setDurTab(val);
+    setGridKey(k => k + 1);
   };
 
   return (
     <>
-      <style dangerouslySetInnerHTML={{__html: `
+      <style dangerouslySetInnerHTML={{ __html: `
         @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,600;0,800;1,700&family=Outfit:wght@300;400;500;700;900&display=swap');
 
         .mp-root *, .mp-root *::before, .mp-root *::after { box-sizing: border-box; }
-
         .mp-root {
           font-family: 'Outfit', sans-serif;
           background: #FCFAF6;
           position: relative; overflow: hidden; padding: 60px 0 80px;
-          -webkit-tap-highlight-color: transparent;
         }
-
-        /* ── Dot grid ── */
         .mp-dots {
           position: absolute; inset: 0;
           background-image: radial-gradient(circle, rgba(255,107,44,0.1) 1.5px, transparent 1.5px);
           background-size: 28px 28px; pointer-events: none; z-index: 0;
           animation: mpDotsPulse 6s ease-in-out infinite;
         }
-        @keyframes mpDotsPulse { 0%,100% { opacity:1; } 50% { opacity:0.5; } }
-
-        /* ── Blobs ── */
+        @keyframes mpDotsPulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
         .mp-blob {
-          position: absolute; border-radius: 50%;
-          filter: blur(80px); opacity: 0.15; pointer-events: none;
+          position: absolute; border-radius: 50%; filter: blur(80px);
+          opacity: 0.15; pointer-events: none;
           animation: mpBlobDrift 15s ease-in-out infinite alternate;
         }
-        @keyframes mpBlobDrift {
-          0%   { transform: translate(0,0) scale(1); }
-          100% { transform: translate(50px,-30px) scale(1.1); }
+        @keyframes mpBlobDrift { 0%{transform:translate(0,0) scale(1)} 100%{transform:translate(50px,-30px) scale(1.1)} }
+
+        /* ── Card entrance animation — runs when .mp-cards-visible is present ── */
+        @keyframes cardSlideUp {
+          from { opacity: 0; transform: translateY(44px) scale(0.96); }
+          to   { opacity: 1; transform: translateY(0)   scale(1); }
+        }
+        .mp-cards-hidden .mp-card-item {
+          opacity: 0;
+        }
+        .mp-cards-visible .mp-card-item {
+          animation: cardSlideUp 0.65s cubic-bezier(.16,1,.3,1) both;
         }
 
-        /* ── Orbit ring spin ── */
-        @keyframes orbitSpin {
-          from { transform: rotate(0deg); }
-          to   { transform: rotate(360deg); }
-        }
+        @keyframes floatThali  { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-14px)} }
+        @keyframes orbitSpin   { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+        @keyframes orbitDot    { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
 
-        /* ── Orbiting dot ── */
-        @keyframes orbitDot {
-          from { transform: rotate(0deg); }
-          to   { transform: rotate(360deg); }
-        }
+        .mp-container { max-width: 1200px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 5; }
 
-        /* ── Card float ── */
-        @keyframes floatThali {
-          0%,100% { transform: translateY(0px); }
-          50%     { transform: translateY(-14px); }
-        }
-
-        /* ── Image swap reveal ── */
-        @keyframes imgReveal {
-          0%   { opacity:0; transform: scale(0.92); }
-          100% { opacity:1; transform: scale(1); }
-        }
-
-        /* ── Shimmer slide ── */
-        @keyframes shimmerSlide {
-          0%   { left: -100%; }
-          100% { left: 160%; }
-        }
-
-        /* ── Container ── */
-        .mp-container { max-width: 1200px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 5; width: 100%; }
-
-        /* ── Heading ── */
         .mp-heading {
-          font-family: 'Fraunces', serif; font-size: clamp(32px,6vw,56px);
-          font-weight: 800; color: #1A0A00; line-height: 1.1;
-          letter-spacing: -0.5px; margin: 0 0 16px;
+          font-family: 'Fraunces', serif;
+          font-size: clamp(32px,6vw,56px); font-weight: 800; color: #1A0A00;
+          line-height: 1.1; letter-spacing: -0.5px; margin: 0 0 16px;
         }
 
-        /* ── Toggles ── */
+        /* Entrance for heading */
+        .mp-header-hidden { opacity: 0; transform: translateY(20px); }
+        .mp-header-visible { opacity: 1; transform: translateY(0); transition: opacity 0.6s ease, transform 0.6s ease; }
+        .mp-header-visible.d2 { transition-delay: 0.15s; }
+        .mp-header-visible.d3 { transition-delay: 0.25s; }
+
         .mp-toggles-wrap { display: flex; flex-direction: column; align-items: center; gap: 16px; margin-bottom: 48px; }
         .mp-toggle-group { display: flex; flex-direction: column; align-items: center; gap: 8px; }
         .mp-toggle-group-label { font-size: 11px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; color: #94A3B8; }
         .mp-toggle-wrap {
-          background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 60px; padding: 6px;
+          background: #fff; border: 1px solid #E2E8F0; border-radius: 60px; padding: 6px;
           display: inline-flex; box-shadow: 0 4px 15px rgba(0,0,0,0.03);
         }
         .mp-toggle-btn {
@@ -1823,76 +2359,73 @@ export default function MealPlans() {
         .mp-toggle-btn.active { background: #FF6B2C; color: #fff; box-shadow: 0 4px 15px rgba(255,107,44,0.3); }
         .mp-toggle-btn:not(.active):hover { background: #F8FAFC; color: #1E293B; }
 
-        /* ── Section divider ── */
         .mp-divider-row { display: flex; align-items: center; gap: 16px; margin: 40px 0 32px; justify-content: center; }
         .mp-section-title { font-family: 'Fraunces', serif; font-size: 24px; font-weight: 800; color: #1E293B; }
         .mp-divider-line { flex: 1; height: 1px; background: #E2E8F0; max-width: 200px; }
 
-        /* ── Grids ── */
         .mp-grid {
           display: grid; grid-template-columns: 1fr; gap: 40px;
-          transition: opacity 0.3s ease, transform 0.3s ease;
         }
-        @media (min-width: 768px) {
-          .mp-grid { grid-template-columns: repeat(2, 1fr); gap: 24px; }
+        @media(min-width:768px) {
+          .mp-grid { grid-template-columns: repeat(2,1fr); gap: 24px; }
           .mp-toggles-wrap { flex-direction: row; gap: 32px; justify-content: center; }
         }
-        @media (min-width: 1024px) { .mp-grid.three-col { grid-template-columns: repeat(3, 1fr); } }
+        @media(min-width:1024px) { .mp-grid.three-col { grid-template-columns: repeat(3,1fr); } }
 
-        .mp-cards-toggling { opacity: 0; transform: translateY(10px); }
-        .mp-cards-ready    { opacity: 1; transform: translateY(0); }
-
-        /* ── Trial banner ── */
         .mp-trial {
           background: #fff; border: 1px solid #E2E8F0; border-radius: 32px;
           padding: 24px 32px; margin-top: 64px;
           display: flex; align-items: center; justify-content: space-between; gap: 24px;
-          box-shadow: 0 10px 40px rgba(0,0,0,0.03); flex-wrap: wrap; text-align: left;
+          box-shadow: 0 10px 40px rgba(0,0,0,0.03); flex-wrap: wrap;
         }
         .mp-trial-btn {
           padding: 14px 28px; border-radius: 50px;
-          background: linear-gradient(135deg, #FF6B2C, #E84F00); color: #fff; font-weight: 800;
-          text-decoration: none; display: inline-flex; align-items: center; gap: 8px;
+          background: linear-gradient(135deg,#FF6B2C,#E84F00); color: #fff;
+          font-weight: 800; text-decoration: none;
+          display: inline-flex; align-items: center; gap: 8px;
           transition: all 0.3s ease; white-space: nowrap;
         }
         .mp-trial-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(255,107,44,0.35); }
-
-        @media (max-width: 640px) {
+        @media(max-width:640px) {
           .mp-trial { flex-direction: column; text-align: center; justify-content: center; padding: 24px; }
           .mp-trial-btn { width: 100%; justify-content: center; }
         }
       `}} />
 
-      <section id="meal-plans" ref={sectionRef} className="mp-root">
-
+      <section id="meal-plans" className="mp-root">
         <div className="mp-dots" />
         <ParticleCanvas />
         <div className="mp-blob" style={{ width: 500, height: 500, background: '#FFD580', top: -100, right: -150 }} />
         <div className="mp-blob" style={{ width: 400, height: 400, background: '#FF9F6B', bottom: -50, left: -100, animationDelay: '-5s' }} />
 
-        <div className="mp-container">
+        <div className="mp-container" ref={sectionRef}>
 
           {/* HEADER */}
           <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-            <h2 className="mp-heading" style={{ opacity: inView ? 1 : 0, transform: inView ? 'translateY(0)' : 'translateY(20px)', transition: 'all 0.6s ease' }}>
+            <h2 className={`mp-heading ${inView ? 'mp-header-visible' : 'mp-header-hidden'}`}>
               Choose Your Meal Plan
             </h2>
-            <div className="flex justify-center items-center gap-4 flex-wrap text-[#64748B] font-medium text-sm" style={{ opacity: inView ? 1 : 0, transition: 'all 0.6s ease 0.2s' }}>
-              <span className="flex items-center gap-1.5"><Clock size={16} className="text-[#FF6B2C]" /> 6 Days / Week</span>
-              <span className="hidden sm:block">•</span>
-              <span className="flex items-center gap-1.5"><Truck size={16} className="text-[#FF6B2C]" /> Free Delivery</span>
-              <span className="hidden sm:block">•</span>
-              <span className="flex items-center gap-1.5"><Star size={16} className="text-[#FF6B2C]" /> 26 Days / Month</span>
+            <div className={`${inView ? 'mp-header-visible d2' : 'mp-header-hidden'}`}
+              style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 16, flexWrap: 'wrap', color: '#64748B', fontWeight: 500, fontSize: 14 }}>
+              <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><Clock size={16} color="#FF6B2C" /> 6 Days / Week</span>
+              <span>•</span>
+              <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><Truck size={16} color="#FF6B2C" /> Free Delivery</span>
+              <span>•</span>
+              <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><Star size={16} color="#FF6B2C" /> 26 Days / Month</span>
             </div>
           </div>
 
           {/* TOGGLES */}
-          <div className="mp-toggles-wrap" style={{ opacity: inView ? 1 : 0, transition: 'all 0.6s ease 0.3s' }}>
+          <div className={`mp-toggles-wrap ${inView ? 'mp-header-visible d3' : 'mp-header-hidden'}`}>
             <div className="mp-toggle-group">
               <span className="mp-toggle-group-label">Diet Preference</span>
               <div className="mp-toggle-wrap">
-                <button className={`mp-toggle-btn${foodTab === 'veg' ? ' active' : ''}`} onClick={() => handleFoodTab('veg')}><Leaf size={16} /> Veg</button>
-                <button className={`mp-toggle-btn${foodTab === 'nonveg' ? ' active' : ''}`} onClick={() => handleFoodTab('nonveg')}><Drumstick size={16} /> Non-Veg</button>
+                <button className={`mp-toggle-btn${foodTab === 'veg' ? ' active' : ''}`} onClick={() => handleFoodTab('veg')}>
+                  <Leaf size={16} /> Veg
+                </button>
+                <button className={`mp-toggle-btn${foodTab === 'nonveg' ? ' active' : ''}`} onClick={() => handleFoodTab('nonveg')}>
+                  <Drumstick size={16} /> Non-Veg
+                </button>
               </div>
             </div>
             <div className="mp-toggle-group">
@@ -1905,62 +2438,77 @@ export default function MealPlans() {
           </div>
 
           {/* 1 MEAL / DAY */}
-          <div className="mp-divider-row" style={{ opacity: inView ? 1 : 0, transition: 'all 0.6s ease 0.4s' }}>
-            <div className="mp-divider-line hidden md:block" />
-            <span className="mp-section-title">1 Meal / Day <span className="text-sm font-medium text-[#94A3B8] ml-2 font-sans tracking-normal">(Lunch OR Dinner)</span></span>
-            <div className="mp-divider-line hidden md:block" />
+          <div className={`mp-divider-row ${inView ? 'mp-header-visible' : 'mp-header-hidden'}`}>
+            <div className="mp-divider-line" style={{ display: 'none' }} />
+            <span className="mp-section-title">
+              1 Meal / Day{' '}
+              <span style={{ fontSize: 14, fontWeight: 500, color: '#94A3B8', fontFamily: 'Outfit,sans-serif' }}>(Lunch OR Dinner)</span>
+            </span>
+            <div className="mp-divider-line" style={{ display: 'none' }} />
           </div>
 
-          <div className={`mp-grid two-col max-w-4xl mx-auto ${toggling ? 'mp-cards-toggling' : 'mp-cards-ready'}`}>
+          {/* key= forces full remount → animation replays on tab switch */}
+          <div key={`one-${gridKey}`} className={`mp-grid max-w-4xl mx-auto ${inView ? 'mp-cards-visible' : 'mp-cards-hidden'}`} style={{ maxWidth: 860, margin: '0 auto' }}>
             {ONE_MEAL_PLANS.map((plan, i) => {
               const priceVal   = durTab === 'weekly' ? plan.weekly[foodTab] : plan.monthly[foodTab];
-              const features   = plan.features[foodTab];
               const totalMeals = durTab === 'weekly' ? 6 : 26;
-              const imageSrc   = plan.image[foodTab];
-              const waUrl      = buildWhatsAppUrl({ tier: `${plan.tier} – 1 Meal/Day`, type: foodTab === 'veg' ? 'Veg' : 'Non-Veg', price: priceVal, duration: durTab, features });
+              const waUrl      = buildWhatsAppUrl({ tier: `${plan.tier} – 1 Meal/Day`, type: foodTab === 'veg' ? 'Veg' : 'Non-Veg', price: priceVal, duration: durTab, features: plan.features[foodTab] });
               return (
-                <ThaliMealCard key={plan.tier} plan={plan} priceVal={priceVal} features={features} waUrl={waUrl}
-                  mealType={durTab === 'weekly' ? 'week' : 'month'} delay={inView ? i * 100 : 9999}
-                  imageSrc={imageSrc} totalMeals={totalMeals} />
+                <ThaliMealCard
+                  key={plan.tier}
+                  plan={plan} priceVal={priceVal}
+                  features={plan.features[foodTab]}
+                  waUrl={waUrl}
+                  mealType={durTab === 'weekly' ? 'week' : 'month'}
+                  animIndex={i}
+                  imageSrc={plan.image[foodTab]}
+                  totalMeals={totalMeals}
+                />
               );
             })}
           </div>
 
           {/* 2 MEALS / DAY */}
-          <div className="mp-divider-row" style={{ marginTop: '64px', opacity: inView ? 1 : 0, transition: 'all 0.6s ease 0.5s' }}>
-            <div className="mp-divider-line hidden md:block" />
-            <span className="mp-section-title">2 Meals / Day <span className="text-sm font-medium text-[#94A3B8] ml-2 font-sans tracking-normal">(Lunch & Dinner)</span></span>
-            <div className="mp-divider-line hidden md:block" />
+          <div className={`mp-divider-row ${inView ? 'mp-header-visible' : 'mp-header-hidden'}`} style={{ marginTop: 64 }}>
+            <span className="mp-section-title">
+              2 Meals / Day{' '}
+              <span style={{ fontSize: 14, fontWeight: 500, color: '#94A3B8', fontFamily: 'Outfit,sans-serif' }}>(Lunch & Dinner)</span>
+            </span>
           </div>
 
           {durTab === 'weekly' && (
-            <p className="text-center text-[#FF6B2C] font-bold text-sm mb-6 animate-pulse">
+            <p style={{ textAlign: 'center', color: '#FF6B2C', fontWeight: 700, fontSize: 14, marginBottom: 24 }}>
               * 2-meal plans are available on a monthly basis only.
             </p>
           )}
 
-          <div className={`mp-grid three-col ${toggling ? 'mp-cards-toggling' : 'mp-cards-ready'}`}>
+          <div key={`two-${gridKey}`} className={`mp-grid three-col ${inView ? 'mp-cards-visible' : 'mp-cards-hidden'}`}>
             {TWO_MEAL_PLANS.map((plan, i) => {
               const priceVal = plan.monthly[foodTab];
-              const features = plan.features[foodTab];
-              const imageSrc = plan.image[foodTab];
-              const waUrl    = buildWhatsAppUrl({ tier: `${plan.tier} – 2 Meals/Day`, type: foodTab === 'veg' ? 'Veg' : 'Non-Veg', price: priceVal, duration: 'monthly', features });
+              const waUrl    = buildWhatsAppUrl({ tier: `${plan.tier} – 2 Meals/Day`, type: foodTab === 'veg' ? 'Veg' : 'Non-Veg', price: priceVal, duration: 'monthly', features: plan.features[foodTab] });
               return (
-                <ThaliMealCard key={plan.tier} plan={plan} priceVal={priceVal} features={features} waUrl={waUrl}
-                  mealType="month" delay={inView ? i * 150 : 9999}
-                  imageSrc={imageSrc} totalMeals={52} />
+                <ThaliMealCard
+                  key={plan.tier}
+                  plan={plan} priceVal={priceVal}
+                  features={plan.features[foodTab]}
+                  waUrl={waUrl}
+                  mealType="month"
+                  animIndex={i}
+                  imageSrc={plan.image[foodTab]}
+                  totalMeals={52}
+                />
               );
             })}
           </div>
 
           {/* TRIAL BANNER */}
-          <div className="mp-trial" style={{ opacity: inView ? 1 : 0, transform: inView ? 'translateY(0)' : 'translateY(20px)', transition: 'all 0.6s ease 0.8s' }}>
-            <div className="flex items-center gap-6">
-              <div className="w-16 h-16 bg-[#FFF4ED] border border-[#FF6B2C]/20 rounded-2xl flex items-center justify-center text-3xl shadow-inner flex-shrink-0">🎁</div>
+          <div className={`mp-trial ${inView ? 'mp-header-visible' : 'mp-header-hidden'}`} style={{ transitionDelay: '0.5s' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
+              <div style={{ width: 64, height: 64, background: '#FFF4ED', border: '1px solid rgba(255,107,44,0.2)', borderRadius: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 32, flexShrink: 0 }}>🎁</div>
               <div>
-                <h4 className="text-xl font-black text-[#1E293B] mb-1">Want to taste before subscribing?</h4>
-                <p className="text-[#64748B] font-medium text-sm">
-                  2-Day Trial · Veg AED 25 · Non-Veg AED 28. <br className="sm:hidden" /> No commitment needed 😊
+                <h4 style={{ fontSize: 18, fontWeight: 900, color: '#1E293B', marginBottom: 4 }}>Want to taste before subscribing?</h4>
+                <p style={{ color: '#64748B', fontWeight: 500, fontSize: 14 }}>
+                  2-Day Trial · Veg AED 25 · Non-Veg AED 28. No commitment needed 😊
                 </p>
               </div>
             </div>

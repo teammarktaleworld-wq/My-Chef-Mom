@@ -533,7 +533,7 @@ const SOCIALS = [
   },
   {
     label:    'YouTube',
-    href:     'https://youtu.be/HLdMUbgF_BM?si=eZIYWb8PoKw-Tinb',
+    href:     'https://youtube.com/@thechefmom3897?si=SPU8gdEM0vcx8R0C',
     icon:     <IconYouTube />,
     hoverBg:  '#FF0000',
     hoverShadow: 'rgba(255,0,0,0.4)',
@@ -541,7 +541,7 @@ const SOCIALS = [
   },
   {
     label:    'TikTok',
-    href:     'https://www.tiktok.com/@thechefmom',   // update when you have the real URL
+    href:     'https://www.tiktok.com/@thechefmomofficial?_r=1&_t=ZS-96VmTaJpElM',  // update when you have the real URL
     icon:     <IconTikTok />,
     hoverBg:  '#000000',
     hoverShadow: 'rgba(0,0,0,0.4)',
@@ -818,7 +818,7 @@ export default function Footer() {
                 <div className="ft-logo-icon">👩‍🍳</div>
                 <div className="ft-logo">
                   <span className="ft-logo-main">The Chef Mom</span>
-                  <span className="ft-logo-sub">&amp; Currytales</span>
+                  <span className="ft-logo-sub">&amp; Curry Craft</span>
                 </div>
               </div>
 
@@ -850,7 +850,7 @@ export default function Footer() {
                   <IconFacebook />
                 </a>
                 <a
-                  href="https://youtu.be/HLdMUbgF_BM?si=eZIYWb8PoKw-Tinb"
+               href="https://youtube.com/@thechefmom3897?si=SPU8gdEM0vcx8R0C"
                   target="_blank" rel="noreferrer"
                   className="ft-social yt"
                   aria-label="YouTube"
@@ -858,7 +858,7 @@ export default function Footer() {
                   <IconYouTube />
                 </a>
                 <a
-                  href="https://www.tiktok.com/@thechefmom"
+                 href="https://www.tiktok.com/@thechefmomofficial?_r=1&_t=ZS-96VmTaJpElM"
                   target="_blank" rel="noreferrer"
                   className="ft-social tt"
                   aria-label="TikTok"

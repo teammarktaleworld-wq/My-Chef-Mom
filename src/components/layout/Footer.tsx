@@ -972,7 +972,7 @@ export default function Footer() {
             <div className="ft-copy">
               © {new Date().getFullYear()}
               <span style={{ color:'#C0392B', fontWeight:700 }}>The Chef Mom</span>
-              &amp; Currytales, Dubai. Made with
+              &amp; Curry Craft, Dubai. Made with
               <span className="ft-heart"><Heart size={12} fill="#FF6B2C" strokeWidth={0} /></span>
               in Dubai.
             </div>

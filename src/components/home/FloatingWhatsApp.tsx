@@ -292,7 +292,8 @@ export default function FloatingWhatsApp() {
               </div>
             </div>
             <p className="wa-bubble-text">
-              Namasté! 🙏 Ready to order fresh homemade meals? Chat with us on WhatsApp!
+             Hello👋 Ready to order fresh homemade meals? Chat with us on WhatsApp!
+              {/* Keep Hello by priya */}
             </p>
             <button className="wa-bubble-cta" onClick={handleClick}>
               <svg width="13" height="13" viewBox="0 0 24 24" fill="white">

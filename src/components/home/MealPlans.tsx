@@ -1259,7 +1259,7 @@
 //               const totalMeals = durTab === 'weekly' ? 6 : 26; // 6 days a week, or 26 days a month
 //               const imageSrc = plan.image[foodTab];
 //               const waUrl = buildWhatsAppUrl({ tier: `${plan.tier} – 1 Meal/Day`, type: foodTab === 'veg' ? 'Veg' : 'Non-Veg', price: priceVal, duration: durTab, features });
-              
+
 //               return (
 //                 <ThaliMealCard 
 //                   key={plan.tier} 
@@ -1296,7 +1296,7 @@
 //               const totalMeals = 52; // 2 meals * 26 days
 //               const imageSrc = plan.image[foodTab];
 //               const waUrl = buildWhatsAppUrl({ tier: `${plan.tier} – 2 Meals/Day`, type: foodTab === 'veg' ? 'Veg' : 'Non-Veg', price: priceVal, duration: 'monthly', features });
-              
+
 //               return (
 //                 <ThaliMealCard 
 //                   key={plan.tier} 
@@ -2536,6 +2536,537 @@
 
 
 
+// C:\Marktale-projectes\My-Chef-Mom\src\components\home\MealPlans.tsx
+
+
+// 'use client';
+
+// import React, { useState, useEffect, useRef } from 'react';
+// import { Leaf, Drumstick, Clock, Truck, Star, ChevronRight } from 'lucide-react';
+
+// const WHATSAPP_NUMBER = '+971557998925';
+
+// function buildWhatsAppUrl(plan: {
+//   tier: string; type: 'Veg' | 'Non-Veg'; price: number;
+//   duration: 'weekly' | 'monthly'; features: string[]; isTrial?: boolean;
+// }) {
+//   const { tier, type, price, duration, features, isTrial } = plan;
+//   if (isTrial) {
+//     const msg = [`👋 Hello The Chef Mom!`, ``, `I'd like to book a *2-Day Trial Meal* before subscribing.`, ``, `Please share the trial details and delivery schedule.`, ``, `Thank you! 🙏`].join('\n');
+//     return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
+//   }
+//   const msg = [
+//     `👋 Hello The Chef Mom!`, ``,
+//     `I'm interested in subscribing to the following meal plan:`, ``,
+//     `📦 *Plan:* ${tier} (${type})`,
+//     `💰 *Price:* AED ${price}/${duration === 'weekly' ? 'week' : 'month'}`,
+//     `🍽️ *Includes:*`,
+//     ...features.map(f => `   • ${f}`), ``,
+//     `Please share payment details and delivery schedule.`, ``,
+//     `Thank you! 🙏`,
+//   ].join('\n');
+//   return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
+// }
+
+// const ONE_MEAL_PLANS = [
+//   {
+//     tier: 'Half Meal', badge: null,
+//     weekly: { veg: 119, nonveg: 157 }, monthly: { veg: 449, nonveg: 625 },
+//     image: { veg: '/chefmom/Basic plan week.png', nonveg: '/chefmom/Basic plan week.png' },
+//     features: {
+//       veg: ['1 Dal / Curry', '1 Dry Sabzi', '3 Roti or Rice', 'Salad'],
+//       nonveg: ['1 Chicken Curry', '1 Dry Sabzi', '3 Roti or Rice', 'Salad'],
+//     },
+//   },
+//   {
+//     tier: 'Full Meal', badge: '⭐ Best Value',
+//     weekly: { veg: 135, nonveg: 169 }, monthly: { veg: 549, nonveg: 689 },
+//     image: { veg: '/chefmom/Basic plan.png', nonveg: '/chefmom/Basic plan.png' },
+//     features: {
+//       veg: ['1 Dal / Curry', '1 Dry Sabzi', '3 Roti & Rice', 'Salad & Sweet or Raita'],
+//       nonveg: ['1 Chicken Curry', '1 Dry Sabzi', '3 Roti & Rice', 'Salad & Sweet or Raita'],
+//     },
+//   },
+// ];
+
+// const TWO_MEAL_PLANS = [
+//   {
+//     tier: 'Basic Plan', badge: null,
+//     monthly: { veg: 769, nonveg: 949 },
+//     image: { veg: '/chefmom/Basic plan.png', nonveg: '/chefmom/Basic plan.png' },
+//     features: {
+//       veg: ['2 Meals / Day', 'Standard Menu', 'Roti, Rice, Dal, Sabzi, Salad'],
+//       nonveg: ['2 Meals / Day', 'Standard Menu', 'Chicken 3x a week, Dal, Roti'],
+//     },
+//   },
+//   {
+//     tier: 'Standard Plan', badge: '⭐ Most Preferred',
+//     monthly: { veg: 949, nonveg: 1169 },
+//     image: { veg: '/chefmom/Standard plan.png', nonveg: '/chefmom/Standard plan week.png' },
+//     features: {
+//       veg: ['2 Meals / Day', 'Premium Menu', 'Sweet or Raita', 'Flexible Delivery'],
+//       nonveg: ['2 Meals / Day', 'Premium Menu', 'Chicken', 'Sweet or Raita'],
+//     },
+//   },
+//   {
+//     tier: 'Premium Plan', badge: null,
+//     monthly: { veg: 1149, nonveg: 1369 },
+//     image: { veg: '/chefmom/Premium-Meal.png', nonveg: '/chefmom/Premium-Meal weak.png' },
+//     features: {
+//       veg: ['2 Meals / Day', 'Deluxe Menu', '4 Roti & Rice', 'Sweet or Raita', 'Special Weekend Dishes'],
+//       nonveg: ['2 Meals / Day', 'Deluxe Menu', '4 Roti & Rice', 'Sweet or Raita', 'Special Weekend Dishes'],
+//     },
+//   },
+// ];
+
+// function ParticleCanvas() {
+//   const canvasRef = useRef<HTMLCanvasElement>(null);
+//   useEffect(() => {
+//     const canvas = canvasRef.current;
+//     if (!canvas) return;
+//     const ctx = canvas.getContext('2d');
+//     if (!ctx) return;
+//     let raf: number;
+//     const resize = () => { canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight; };
+//     resize();
+//     window.addEventListener('resize', resize);
+//     type P = { x: number; y: number; r: number; vx: number; vy: number; alpha: number; color: string };
+//     const ps: P[] = Array.from({ length: 48 }, () => ({
+//       x: Math.random() * canvas.width, y: Math.random() * canvas.height,
+//       r: Math.random() * 3.5 + 0.8, vx: (Math.random() - 0.5) * 0.32,
+//       vy: -(Math.random() * 0.5 + 0.1), alpha: Math.random() * 0.45 + 0.1,
+//       color: Math.random() > 0.5 ? '#FF6B2C' : '#F5A623',
+//     }));
+//     const draw = () => {
+//       ctx.clearRect(0, 0, canvas.width, canvas.height);
+//       ps.forEach(p => {
+//         ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+//         ctx.fillStyle = p.color; ctx.globalAlpha = p.alpha; ctx.fill();
+//         p.x += p.vx; p.y += p.vy;
+//         if (p.y < -10) { p.y = canvas.height + 10; p.x = Math.random() * canvas.width; }
+//         if (p.x < -10) p.x = canvas.width + 10;
+//         if (p.x > canvas.width + 10) p.x = -10;
+//       });
+//       ctx.globalAlpha = 1;
+//       raf = requestAnimationFrame(draw);
+//     };
+//     draw();
+//     return () => { cancelAnimationFrame(raf); window.removeEventListener('resize', resize); };
+//   }, []);
+//   return <canvas ref={canvasRef} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: 1 }} />;
+// }
+
+// function ThaliMealCard({
+//   plan, priceVal, features, waUrl, mealType, animIndex, imageSrc, totalMeals,
+// }: {
+//   plan: { tier: string; badge: string | null };
+//   priceVal: number; features: string[];
+//   waUrl: string; mealType: string;
+//   animIndex: number; imageSrc: string; totalMeals: number;
+// }) {
+//   const [hovered, setHovered] = useState(false);
+//   const perMealPrice = Math.round(priceVal / totalMeals);
+
+//   const glowStyle: React.CSSProperties = {
+//     position: 'absolute', inset: '-12px', borderRadius: '50%', zIndex: 0,
+//     background: 'radial-gradient(circle, rgba(255,107,44,0.22) 0%, transparent 70%)',
+//     transform: hovered ? 'scale(1.18)' : 'scale(1)',
+//     transition: 'transform 0.5s ease',
+//     filter: hovered ? 'blur(0px)' : 'blur(2px)',
+//   };
+
+//   const orbitRingStyle: React.CSSProperties = {
+//     position: 'absolute', inset: '-6px', borderRadius: '50%', zIndex: 1,
+//     border: '3px dashed rgba(255,107,44,0.55)',
+//     animation: hovered ? 'orbitSpin 4s linear infinite' : 'orbitSpin 18s linear infinite',
+//   };
+
+//   const innerWrapStyle: React.CSSProperties = {
+//     position: 'relative', zIndex: 2, padding: '6px', borderRadius: '50%',
+//     background: hovered ? 'linear-gradient(135deg,#FFF4ED,#FFE0CC)' : 'transparent',
+//     transition: 'background 0.4s ease',
+//     boxShadow: hovered ? '0 0 30px rgba(255,107,44,0.25)' : 'none',
+//   };
+
+//   const imgStyle: React.CSSProperties = {
+//     width: 200, height: 200, borderRadius: '50%', objectFit: 'cover',
+//     boxShadow: '0 12px 40px rgba(0,0,0,0.18)',
+//     transform: hovered ? 'scale(1.07)' : 'scale(1)',
+//     transition: 'transform 0.5s cubic-bezier(.34,1.56,.64,1)',
+//     display: 'block',
+//   };
+
+//   const orbitDotWrapStyle: React.CSSProperties = {
+//     position: 'absolute', top: '50%', left: '50%', zIndex: 4,
+//     width: 212, height: 212, marginLeft: -106, marginTop: -106,
+//     animation: hovered ? 'orbitDot 2s linear infinite' : 'orbitDot 6s linear infinite',
+//     pointerEvents: 'none',
+//   };
+
+//   const priceStickerStyle: React.CSSProperties = {
+//     background: 'linear-gradient(135deg,#FF6B2C,#E55A1F)', color: '#fff',
+//     padding: '8px 14px', borderRadius: '4px', fontWeight: 800, fontSize: 11,
+//     boxShadow: '0 4px 14px rgba(255,107,44,0.45)',
+//     transform: hovered ? 'rotate(10deg) scale(1.08)' : 'rotate(16deg) scale(1)',
+//     transition: 'transform 0.4s cubic-bezier(.34,1.56,.64,1)',
+//     display: 'flex', alignItems: 'center', gap: 6,
+//   };
+
+//   const ctaStyle: React.CSSProperties = {
+//     width: '100%', maxWidth: 280, color: '#fff', borderRadius: 16,
+//     padding: '14px 24px', display: 'flex', flexDirection: 'column',
+//     alignItems: 'center', justifyContent: 'center', textDecoration: 'none',
+//     background: 'linear-gradient(135deg,#FF6B2C 0%,#E84F00 100%)',
+//     transition: 'all 0.3s ease',
+//     boxShadow: hovered ? '0 12px 30px rgba(255,107,44,0.5)' : '0 4px 15px rgba(255,107,44,0.25)',
+//     transform: hovered ? 'translateY(-3px)' : 'translateY(0)',
+//   };
+
+//   return (
+//     <div
+//       className="mp-card-item"
+//       style={{ animationDelay: `${animIndex * 120}ms` }}
+//       onMouseEnter={() => setHovered(true)}
+//       onMouseLeave={() => setHovered(false)}
+//     >
+//       <div className="flex flex-col items-center text-center p-4 relative">
+
+//         {plan.badge && (
+//           <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-yellow-400 text-[#1A0A00] font-black text-xs px-4 py-1.5 rounded-full shadow-md z-20 whitespace-nowrap">
+//             {plan.badge}
+//           </div>
+//         )}
+
+//         <div className="relative mb-6" style={{ animation: `floatThali 6s ease-in-out ${animIndex * 0.8}s infinite` }}>
+//           <div style={glowStyle} />
+//           <div style={orbitRingStyle} />
+//           <div style={innerWrapStyle}>
+//             <img src={imageSrc} alt={plan.tier} style={imgStyle} />
+//           </div>
+//           <div style={orbitDotWrapStyle}>
+//             <div style={{
+//               position: 'absolute', top: -5, left: '50%',
+//               width: 10, height: 10, borderRadius: '50%',
+//               background: '#FF6B2C', boxShadow: '0 0 8px #FF6B2C',
+//               transform: 'translateX(-50%)',
+//             }} />
+//           </div>
+//           <div className="absolute -top-2 -right-6 z-10" style={priceStickerStyle}>
+//             <div style={{ width: 6, height: 6, background: '#fff', borderRadius: '50%', opacity: 0.8 }} />
+//             <div style={{ border: '1px dashed rgba(255,255,255,0.6)', padding: '3px 8px', borderRadius: 3 }}>
+//               {perMealPrice} AED/Meal
+//             </div>
+//           </div>
+//         </div>
+
+//         <h3 style={{ fontFamily: "'Outfit',sans-serif", fontSize: 'clamp(20px,3vw,28px)', fontWeight: 900, color: '#2A3342', marginBottom: 12 }}>
+//           {plan.tier}
+//         </h3>
+
+//         <p style={{ color: '#64748B', fontSize: 14, fontWeight: 500, maxWidth: 280, lineHeight: 1.7, marginBottom: 24, minHeight: 60 }}>
+//           {features.join(', ')}
+//         </p>
+
+//         <a href={waUrl} target="_blank" rel="noreferrer" style={ctaStyle}>
+//           <span style={{ fontSize: 'clamp(18px,3vw,24px)', fontWeight: 900 }}>
+//             AED {priceVal} <span style={{ fontSize: 13, fontWeight: 500, opacity: 0.9 }}>/ {mealType}</span>
+//           </span>
+//           <span style={{ fontSize: 12, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', marginTop: 2, display: 'flex', alignItems: 'center', gap: 4 }}>
+//             Order Now <ChevronRight size={14} />
+//           </span>
+//         </a>
+
+//       </div>
+//     </div>
+//   );
+// }
+
+// export default function MealPlans() {
+//   const [foodTab, setFoodTab] = useState<'veg' | 'nonveg'>('veg');
+//   const [durTab, setDurTab] = useState<'weekly' | 'monthly'>('weekly');
+//   const [inView, setInView] = useState(false);
+//   const [gridKey, setGridKey] = useState(0);
+//   const sectionRef = useRef<HTMLDivElement>(null);
+
+//   useEffect(() => {
+//     const el = sectionRef.current;
+//     if (!el) return;
+//     const rect = el.getBoundingClientRect();
+//     if (rect.top < window.innerHeight && rect.bottom > 0) {
+//       setInView(true);
+//       return;
+//     }
+//     const obs = new IntersectionObserver(
+//       ([entry]) => { if (entry.isIntersecting) { setInView(true); obs.disconnect(); } },
+//       { threshold: 0.05, rootMargin: '0px 0px -40px 0px' }
+//     );
+//     obs.observe(el);
+//     return () => obs.disconnect();
+//   }, []);
+
+//   const handleFoodTab = (val: 'veg' | 'nonveg') => {
+//     if (val === foodTab) return;
+//     setFoodTab(val);
+//     setGridKey(k => k + 1);
+//   };
+//   const handleDurTab = (val: 'weekly' | 'monthly') => {
+//     if (val === durTab) return;
+//     setDurTab(val);
+//     setGridKey(k => k + 1);
+//   };
+
+//   return (
+//     <>
+//       <style dangerouslySetInnerHTML={{
+//         __html: `
+//         @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,600;0,800;1,700&family=Outfit:wght@300;400;500;700;900&display=swap');
+
+//         .mp-root *, .mp-root *::before, .mp-root *::after { box-sizing: border-box; }
+//         .mp-root {
+//           font-family: 'Outfit', sans-serif;
+//           background: #FCFAF6;
+//           position: relative; overflow: hidden; padding: 60px 0 80px;
+//         }
+//         .mp-dots {
+//           position: absolute; inset: 0;
+//           background-image: radial-gradient(circle, rgba(255,107,44,0.1) 1.5px, transparent 1.5px);
+//           background-size: 28px 28px; pointer-events: none; z-index: 0;
+//           animation: mpDotsPulse 6s ease-in-out infinite;
+//         }
+//         @keyframes mpDotsPulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+//         .mp-blob {
+//           position: absolute; border-radius: 50%; filter: blur(80px);
+//           opacity: 0.15; pointer-events: none;
+//           animation: mpBlobDrift 15s ease-in-out infinite alternate;
+//         }
+//         @keyframes mpBlobDrift { 0%{transform:translate(0,0) scale(1)} 100%{transform:translate(50px,-30px) scale(1.1)} }
+
+//         @keyframes cardSlideUp {
+//           from { opacity: 0; transform: translateY(44px) scale(0.96); }
+//           to   { opacity: 1; transform: translateY(0) scale(1); }
+//         }
+//         .mp-cards-hidden .mp-card-item { opacity: 0; }
+//         .mp-cards-visible .mp-card-item {
+//           animation: cardSlideUp 0.65s cubic-bezier(.16,1,.3,1) both;
+//         }
+
+//         @keyframes floatThali  { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-14px)} }
+//         @keyframes orbitSpin   { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+//         @keyframes orbitDot    { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+
+//         .mp-container { max-width: 1200px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 5; }
+
+//         .mp-heading {
+//           font-family: 'Fraunces', serif;
+//           font-size: clamp(32px,6vw,56px); font-weight: 800; color: #1A0A00;
+//           line-height: 1.1; letter-spacing: -0.5px; margin: 0 0 16px;
+//         }
+
+//         .mp-header-hidden { opacity: 0; transform: translateY(20px); }
+//         .mp-header-visible { opacity: 1; transform: translateY(0); transition: opacity 0.6s ease, transform 0.6s ease; }
+//         .mp-header-visible.d2 { transition-delay: 0.15s; }
+//         .mp-header-visible.d3 { transition-delay: 0.25s; }
+
+//         .mp-toggles-wrap { display: flex; flex-direction: column; align-items: center; gap: 16px; margin-bottom: 48px; }
+//         .mp-toggle-group { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+//         .mp-toggle-group-label { font-size: 11px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; color: #94A3B8; }
+//         .mp-toggle-wrap {
+//           background: #fff; border: 1px solid #E2E8F0; border-radius: 60px; padding: 6px;
+//           display: inline-flex; box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+//         }
+//         .mp-toggle-btn {
+//           display: flex; align-items: center; gap: 8px; padding: 10px 24px; border-radius: 50px;
+//           font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 700;
+//           cursor: pointer; border: none; background: transparent; color: #64748B;
+//           transition: all 0.3s ease; white-space: nowrap; outline: none;
+//         }
+//         .mp-toggle-btn.active { background: #FF6B2C; color: #fff; box-shadow: 0 4px 15px rgba(255,107,44,0.3); }
+//         .mp-toggle-btn:not(.active):hover { background: #F8FAFC; color: #1E293B; }
+
+//         .mp-divider-row { display: flex; align-items: center; gap: 16px; margin: 40px 0 32px; justify-content: center; }
+//         .mp-section-title { font-family: 'Fraunces', serif; font-size: 24px; font-weight: 800; color: #1E293B; }
+//         .mp-divider-line { flex: 1; height: 1px; background: #E2E8F0; max-width: 200px; }
+
+//         .mp-grid { display: grid; grid-template-columns: 1fr; gap: 40px; }
+//         @media(min-width:768px) {
+//           .mp-grid { grid-template-columns: repeat(2,1fr); gap: 24px; }
+//           .mp-toggles-wrap { flex-direction: row; gap: 32px; justify-content: center; }
+//         }
+//         @media(min-width:1024px) { .mp-grid.three-col { grid-template-columns: repeat(3,1fr); } }
+
+//         .mp-trial {
+//           background: #fff; border: 1px solid #E2E8F0; border-radius: 32px;
+//           padding: 24px 32px; margin-top: 64px;
+//           display: flex; align-items: center; justify-content: space-between; gap: 24px;
+//           box-shadow: 0 10px 40px rgba(0,0,0,0.03); flex-wrap: wrap;
+//         }
+//         .mp-trial-btn {
+//           padding: 14px 28px; border-radius: 50px;
+//           background: linear-gradient(135deg,#FF6B2C,#E84F00); color: #fff;
+//           font-weight: 800; text-decoration: none;
+//           display: inline-flex; align-items: center; gap: 8px;
+//           transition: all 0.3s ease; white-space: nowrap;
+//         }
+//         .mp-trial-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(255,107,44,0.35); }
+//         @media(max-width:640px) {
+//           .mp-trial { flex-direction: column; text-align: center; justify-content: center; padding: 24px; }
+//           .mp-trial-btn { width: 100%; justify-content: center; }
+//         }
+//       `}} />
+
+//       <section id="meal-plans" className="mp-root">
+//         <div className="mp-dots" />
+//         <ParticleCanvas />
+//         <div className="mp-blob" style={{ width: 500, height: 500, background: '#FFD580', top: -100, right: -150 }} />
+//         <div className="mp-blob" style={{ width: 400, height: 400, background: '#FF9F6B', bottom: -50, left: -100, animationDelay: '-5s' }} />
+
+//         <div className="mp-container" ref={sectionRef}>
+
+//           {/* HEADER */}
+//           <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+//             <h2 className={`mp-heading ${inView ? 'mp-header-visible' : 'mp-header-hidden'}`}>
+//               Choose Your Meal Plan
+//             </h2>
+//             <div
+//               className={inView ? 'mp-header-visible d2' : 'mp-header-hidden'}
+//               style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 16, flexWrap: 'wrap', color: '#64748B', fontWeight: 500, fontSize: 14 }}
+//             >
+//               <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><Clock size={16} color="#FF6B2C" /> 6 Days / Week</span>
+//               <span>•</span>
+//               <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><Truck size={16} color="#FF6B2C" /> Free Delivery</span>
+//               <span>•</span>
+//               <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><Star size={16} color="#FF6B2C" /> 26 Days / Month</span>
+//             </div>
+//           </div>
+
+//           {/* TOGGLES */}
+//           <div className={`mp-toggles-wrap ${inView ? 'mp-header-visible d3' : 'mp-header-hidden'}`}>
+//             <div className="mp-toggle-group">
+//               <span className="mp-toggle-group-label">Diet Preference</span>
+//               <div className="mp-toggle-wrap">
+//                 <button className={`mp-toggle-btn${foodTab === 'veg' ? ' active' : ''}`} onClick={() => handleFoodTab('veg')}>
+//                   <Leaf size={16} /> Veg
+//                 </button>
+//                 <button className={`mp-toggle-btn${foodTab === 'nonveg' ? ' active' : ''}`} onClick={() => handleFoodTab('nonveg')}>
+//                   <Drumstick size={16} /> Non-Veg
+//                 </button>
+//               </div>
+//             </div>
+//             <div className="mp-toggle-group">
+//               <span className="mp-toggle-group-label">Billing Cycle</span>
+//               <div className="mp-toggle-wrap">
+//                 <button className={`mp-toggle-btn${durTab === 'weekly' ? ' active' : ''}`} onClick={() => handleDurTab('weekly')}>Weekly</button>
+//                 <button className={`mp-toggle-btn${durTab === 'monthly' ? ' active' : ''}`} onClick={() => handleDurTab('monthly')}>Monthly</button>
+//               </div>
+//             </div>
+//           </div>
+
+//           {/* 1 MEAL / DAY */}
+//           <div className={`mp-divider-row ${inView ? 'mp-header-visible' : 'mp-header-hidden'}`}>
+//             <div className="mp-divider-line" style={{ display: 'none' }} />
+//             <span className="mp-section-title">
+//               1 Meal / Day{' '}
+//               <span style={{ fontSize: 14, fontWeight: 500, color: '#94A3B8', fontFamily: 'Outfit,sans-serif' }}>(Lunch OR Dinner)</span>
+//             </span>
+//             <div className="mp-divider-line" style={{ display: 'none' }} />
+//           </div>
+
+//           <div
+//             key={`one-${gridKey}`}
+//             className={`mp-grid ${inView ? 'mp-cards-visible' : 'mp-cards-hidden'}`}
+//             style={{ maxWidth: 860, margin: '0 auto' }}
+//           >
+//             {ONE_MEAL_PLANS.map((plan, i) => {
+//               const priceVal = durTab === 'weekly' ? plan.weekly[foodTab] : plan.monthly[foodTab];
+//               const totalMeals = durTab === 'weekly' ? 6 : 26;
+//               const waUrl = buildWhatsAppUrl({ tier: `${plan.tier} – 1 Meal/Day`, type: foodTab === 'veg' ? 'Veg' : 'Non-Veg', price: priceVal, duration: durTab, features: plan.features[foodTab] });
+//               return (
+//                 <ThaliMealCard
+//                   key={plan.tier}
+//                   plan={plan}
+//                   priceVal={priceVal}
+//                   features={plan.features[foodTab]}
+//                   waUrl={waUrl}
+//                   mealType={durTab === 'weekly' ? 'week' : 'month'}
+//                   animIndex={i}
+//                   imageSrc={plan.image[foodTab]}
+//                   totalMeals={totalMeals}
+//                 />
+//               );
+//             })}
+//           </div>
+
+//           {/* 2 MEALS / DAY */}
+//           <div className={`mp-divider-row ${inView ? 'mp-header-visible' : 'mp-header-hidden'}`} style={{ marginTop: 64 }}>
+//             <span className="mp-section-title">
+//               2 Meals / Day{' '}
+//               <span style={{ fontSize: 14, fontWeight: 500, color: '#94A3B8', fontFamily: 'Outfit,sans-serif' }}>(Lunch & Dinner)</span>
+//             </span>
+//           </div>
+
+//           {durTab === 'weekly' && (
+//             <p style={{ textAlign: 'center', color: '#FF6B2C', fontWeight: 700, fontSize: 14, marginBottom: 24 }}>
+//               * 2-meal plans are available on a monthly basis only.
+//             </p>
+//           )}
+
+//           <div
+//             key={`two-${gridKey}`}
+//             className={`mp-grid three-col ${inView ? 'mp-cards-visible' : 'mp-cards-hidden'}`}
+//           >
+//             {TWO_MEAL_PLANS.map((plan, i) => {
+//               const priceVal = plan.monthly[foodTab];
+//               const waUrl = buildWhatsAppUrl({ tier: `${plan.tier} – 2 Meals/Day`, type: foodTab === 'veg' ? 'Veg' : 'Non-Veg', price: priceVal, duration: 'monthly', features: plan.features[foodTab] });
+//               return (
+//                 <ThaliMealCard
+//                   key={plan.tier}
+//                   plan={plan}
+//                   priceVal={priceVal}
+//                   features={plan.features[foodTab]}
+//                   waUrl={waUrl}
+//                   mealType="month"
+//                   animIndex={i}
+//                   imageSrc={plan.image[foodTab]}
+//                   totalMeals={52}
+//                 />
+//               );
+//             })}
+//           </div>
+
+//           {/* TRIAL BANNER */}
+//           <div className={`mp-trial ${inView ? 'mp-header-visible' : 'mp-header-hidden'}`} style={{ transitionDelay: '0.5s' }}>
+//             <div style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
+//               <div style={{ width: 64, height: 64, background: '#FFF4ED', border: '1px solid rgba(255,107,44,0.2)', borderRadius: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 32, flexShrink: 0 }}>🎁</div>
+//               <div>
+//                 <h4 style={{ fontSize: 18, fontWeight: 900, color: '#1E293B', marginBottom: 4 }}>Want to taste before subscribing?</h4>
+//                 <p style={{ color: '#64748B', fontWeight: 500, fontSize: 14 }}>
+//                   2-Day Trial · Veg AED 25 · Non-Veg AED 28. No commitment needed 😊
+//                 </p>
+//               </div>
+//             </div>
+
+//             <a
+//               href={buildWhatsAppUrl({
+//                 tier: "Trial",
+//                 type: "Veg",
+//                 price: 0,
+//                 duration: "weekly",
+//                 features: [],
+//                 isTrial: true,
+//               })}
+//               target="_blank"
+//               rel="noreferrer"
+//               className="mp-trial-btn"
+//             >
+//               Book a Trial 🍲 <ChevronRight size={18} />
+//             </a>
+//           </div>
+
+//         </div>
+//       </section>
+//     </>
+//   );
+// }
 
 
 
@@ -2571,19 +3102,19 @@ function buildWhatsAppUrl(plan: {
 const ONE_MEAL_PLANS = [
   {
     tier: 'Half Meal', badge: null,
-    weekly: { veg: 119, nonveg: 157 }, monthly: { veg: 449, nonveg: 625 },
+    weekly: { veg: 125, nonveg: 165 }, monthly: { veg: 469, nonveg: 629 },
     image: { veg: '/chefmom/Basic plan week.png', nonveg: '/chefmom/Basic plan week.png' },
     features: {
-      veg:    ['1 Dal / Curry', '1 Dry Sabzi', '3 Roti or Rice', 'Salad'],
+      veg: ['1 Dal / Curry', '1 Dry Sabzi', '3 Roti or Rice', 'Salad'],
       nonveg: ['1 Chicken Curry', '1 Dry Sabzi', '3 Roti or Rice', 'Salad'],
     },
   },
   {
     tier: 'Full Meal', badge: '⭐ Best Value',
-    weekly: { veg: 135, nonveg: 169 }, monthly: { veg: 549, nonveg: 689 },
+    weekly: { veg: 145, nonveg: 185 }, monthly: { veg: 569, nonveg: 699 },
     image: { veg: '/chefmom/Basic plan.png', nonveg: '/chefmom/Basic plan.png' },
     features: {
-      veg:    ['1 Dal / Curry', '1 Dry Sabzi', '3 Roti & Rice', 'Salad & Sweet or Raita'],
+      veg: ['1 Dal / Curry', '1 Dry Sabzi', '3 Roti & Rice', 'Salad & Sweet or Raita'],
       nonveg: ['1 Chicken Curry', '1 Dry Sabzi', '3 Roti & Rice', 'Salad & Sweet or Raita'],
     },
   },
@@ -2595,7 +3126,7 @@ const TWO_MEAL_PLANS = [
     monthly: { veg: 769, nonveg: 949 },
     image: { veg: '/chefmom/Basic plan.png', nonveg: '/chefmom/Basic plan.png' },
     features: {
-      veg:    ['2 Meals / Day', 'Standard Menu', 'Roti, Rice, Dal, Sabzi, Salad'],
+      veg: ['2 Meals / Day', 'Standard Menu', 'Roti, Rice, Dal, Sabzi, Salad'],
       nonveg: ['2 Meals / Day', 'Standard Menu', 'Chicken 3x a week, Dal, Roti'],
     },
   },
@@ -2604,7 +3135,7 @@ const TWO_MEAL_PLANS = [
     monthly: { veg: 949, nonveg: 1169 },
     image: { veg: '/chefmom/Standard plan.png', nonveg: '/chefmom/Standard plan week.png' },
     features: {
-      veg:    ['2 Meals / Day', 'Premium Menu', 'Sweet or Raita', 'Flexible Delivery'],
+      veg: ['2 Meals / Day', 'Premium Menu', 'Sweet or Raita', 'Flexible Delivery'],
       nonveg: ['2 Meals / Day', 'Premium Menu', 'Chicken', 'Sweet or Raita'],
     },
   },
@@ -2613,7 +3144,7 @@ const TWO_MEAL_PLANS = [
     monthly: { veg: 1149, nonveg: 1369 },
     image: { veg: '/chefmom/Premium-Meal.png', nonveg: '/chefmom/Premium-Meal weak.png' },
     features: {
-      veg:    ['2 Meals / Day', 'Deluxe Menu', '4 Roti & Rice', 'Sweet or Raita', 'Special Weekend Dishes'],
+      veg: ['2 Meals / Day', 'Deluxe Menu', '4 Roti & Rice', 'Sweet or Raita', 'Special Weekend Dishes'],
       nonveg: ['2 Meals / Day', 'Deluxe Menu', '4 Roti & Rice', 'Sweet or Raita', 'Special Weekend Dishes'],
     },
   },
@@ -2783,8 +3314,8 @@ function ThaliMealCard({
 
 export default function MealPlans() {
   const [foodTab, setFoodTab] = useState<'veg' | 'nonveg'>('veg');
-  const [durTab,  setDurTab]  = useState<'weekly' | 'monthly'>('weekly');
-  const [inView,  setInView]  = useState(false);
+  const [durTab, setDurTab] = useState<'weekly' | 'monthly'>('weekly');
+  const [inView, setInView] = useState(false);
   const [gridKey, setGridKey] = useState(0);
   const sectionRef = useRef<HTMLDivElement>(null);
 
@@ -2817,7 +3348,8 @@ export default function MealPlans() {
 
   return (
     <>
-      <style dangerouslySetInnerHTML={{ __html: `
+      <style dangerouslySetInnerHTML={{
+        __html: `
         @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,600;0,800;1,700&family=Outfit:wght@300;400;500;700;900&display=swap');
 
         .mp-root *, .mp-root *::before, .mp-root *::after { box-sizing: border-box; }
@@ -2976,9 +3508,9 @@ export default function MealPlans() {
             style={{ maxWidth: 860, margin: '0 auto' }}
           >
             {ONE_MEAL_PLANS.map((plan, i) => {
-              const priceVal   = durTab === 'weekly' ? plan.weekly[foodTab] : plan.monthly[foodTab];
+              const priceVal = durTab === 'weekly' ? plan.weekly[foodTab] : plan.monthly[foodTab];
               const totalMeals = durTab === 'weekly' ? 6 : 26;
-              const waUrl      = buildWhatsAppUrl({ tier: `${plan.tier} – 1 Meal/Day`, type: foodTab === 'veg' ? 'Veg' : 'Non-Veg', price: priceVal, duration: durTab, features: plan.features[foodTab] });
+              const waUrl = buildWhatsAppUrl({ tier: `${plan.tier} – 1 Meal/Day`, type: foodTab === 'veg' ? 'Veg' : 'Non-Veg', price: priceVal, duration: durTab, features: plan.features[foodTab] });
               return (
                 <ThaliMealCard
                   key={plan.tier}
@@ -3015,7 +3547,7 @@ export default function MealPlans() {
           >
             {TWO_MEAL_PLANS.map((plan, i) => {
               const priceVal = plan.monthly[foodTab];
-              const waUrl    = buildWhatsAppUrl({ tier: `${plan.tier} – 2 Meals/Day`, type: foodTab === 'veg' ? 'Veg' : 'Non-Veg', price: priceVal, duration: 'monthly', features: plan.features[foodTab] });
+              const waUrl = buildWhatsAppUrl({ tier: `${plan.tier} – 2 Meals/Day`, type: foodTab === 'veg' ? 'Veg' : 'Non-Veg', price: priceVal, duration: 'monthly', features: plan.features[foodTab] });
               return (
                 <ThaliMealCard
                   key={plan.tier}
@@ -3043,22 +3575,22 @@ export default function MealPlans() {
                 </p>
               </div>
             </div>
-            
-           <a
-  href={buildWhatsAppUrl({
-    tier: "Trial",
-    type: "Veg",
-    price: 0,
-    duration: "weekly",
-    features: [],
-    isTrial: true,
-  })}
-  target="_blank"
-  rel="noreferrer"
-  className="mp-trial-btn"
->
-  Book a Trial 🍲 <ChevronRight size={18} />
-</a>
+
+            <a
+              href={buildWhatsAppUrl({
+                tier: "Trial",
+                type: "Veg",
+                price: 0,
+                duration: "weekly",
+                features: [],
+                isTrial: true,
+              })}
+              target="_blank"
+              rel="noreferrer"
+              className="mp-trial-btn"
+            >
+              Book a Trial 🍲 <ChevronRight size={18} />
+            </a>
           </div>
 
         </div>

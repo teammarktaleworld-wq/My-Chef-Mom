@@ -888,6 +888,7 @@ export default function Footer() {
                   ['How It Works', '#how-it-works'],
                   ['Reviews',      '#reviews'],
                   ['Contact Us',   '#contact'],
+                  ['Trial Meals & Refund Policy', '/trial-refund-policy'],
                 ].map(([label, href]) => (
                   <a key={label} href={href} className="ft-link">{label}</a>
                 ))}

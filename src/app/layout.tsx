@@ -73,6 +73,7 @@
 
 import type { Metadata } from "next";
 import { Outfit, Geist_Mono } from "next/font/google";
+import WhatsAppPolicyGate from "@/components/policy/WhatsAppPolicyGate";
 import "./globals.css";
 
 const outfit = Outfit({
@@ -130,6 +131,7 @@ export default function RootLayout({
       className={`${outfit.variable} ${geistMono.variable}`}
     >
       <body className="min-h-screen bg-slate-50 font-sans antialiased">
+        <WhatsAppPolicyGate />
         {children}
       </body>
     </html>

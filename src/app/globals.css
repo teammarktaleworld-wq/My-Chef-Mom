@@ -24,3 +24,37 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+.policy-dialog-backdrop { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; padding: 20px; background: rgba(26, 10, 0, .62); backdrop-filter: blur(5px); }
+.policy-dialog { position: relative; width: min(100%, 520px); max-height: min(90vh, 720px); overflow-y: auto; padding: 32px; border: 1px solid rgba(255, 107, 44, .18); border-radius: 24px; background: #fffaf5; color: #38251b; box-shadow: 0 24px 80px rgba(26, 10, 0, .28); }
+.policy-dialog h2, .policy-page-card h1 { margin: 0 0 12px; color: #1a0a00; font-family: Georgia, serif; font-size: clamp(25px, 5vw, 34px); line-height: 1.15; }
+.policy-dialog > p:not(.policy-dialog-eyebrow) { margin: 0 0 14px; color: #6b5344; line-height: 1.65; }
+.policy-dialog-intro { margin: 0 0 16px; color: #6b5344; line-height: 1.6; }
+.policy-dialog-points { margin: 0 0 14px; padding: 4px 0; }
+.policy-dialog-points section { margin: 10px 0 14px; }
+.policy-dialog-points h3 { margin: 0 0 4px; color: #1a0a00; font-size: 15px; }
+.policy-dialog-points p { margin: 0; color: #6b5344; font-size: 14px; line-height: 1.55; }
+.policy-dialog-once { font-size: 13px; }
+.policy-dialog-eyebrow, .policy-page-eyebrow { margin: 0 0 10px; color: #e65d26; font-size: 12px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; }
+.policy-dialog-close { position: absolute; top: 14px; right: 16px; border: 0; background: transparent; color: #6b5344; cursor: pointer; font-size: 28px; line-height: 1; }
+.policy-back-link { display: inline-block; margin: 0 0 18px; color: #b5421b; font-weight: 700; text-underline-offset: 3px; }
+.policy-acknowledgement { display: flex; align-items: flex-start; gap: 12px; padding: 16px; border: 1px solid rgba(255, 107, 44, .22); border-radius: 14px; background: #fff; color: #38251b; font-size: 14px; line-height: 1.6; cursor: pointer; }
+.policy-acknowledgement input { width: 18px; height: 18px; margin-top: 2px; accent-color: #e65d26; flex: 0 0 auto; }
+.policy-dialog-continue { width: 100%; margin-top: 16px; padding: 14px 18px; border: 0; border-radius: 999px; background: #25a65a; color: white; font: inherit; font-weight: 700; cursor: pointer; }
+.policy-dialog-continue:disabled { background: #b7c8bb; cursor: not-allowed; }
+.policy-page { min-height: 100vh; padding: 48px 20px; background: linear-gradient(180deg, #fff6ed, #fff); }
+.policy-page-card { width: min(100%, 820px); margin: 0 auto; padding: clamp(24px, 6vw, 56px); border: 1px solid rgba(255, 107, 44, .14); border-radius: 24px; background: white; box-shadow: 0 16px 50px rgba(70, 35, 12, .08); color: #544337; line-height: 1.75; }
+.policy-intro { margin: 20px 0 30px; color: #6b5344; font-size: 18px; }
+.policy-page-section { margin: 26px 0; }
+.policy-page-section h2, .policy-customer-confirmation h2 { margin: 0 0 8px; color: #1a0a00; font-size: 20px; }
+.policy-page-section p, .policy-thank-you, .policy-customer-confirmation p { margin: 0; }
+.policy-thank-you { margin-top: 30px; }
+.policy-customer-confirmation { margin-top: 32px; padding: 20px; border-radius: 14px; background: #fff6ed; }
+.policy-page-checkbox { display: flex; align-items: flex-start; gap: 10px; cursor: pointer; }
+.policy-page-checkbox input { width: 18px; height: 18px; margin-top: 4px; flex: 0 0 auto; accent-color: #e65d26; cursor: pointer; }
+.policy-page-checkbox.is-accepted, .policy-page-checkbox input:disabled { cursor: default; }
+.policy-page-acknowledgement-form { display: flex; flex-direction: column; align-items: flex-start; gap: 16px; }
+.policy-page-submit { min-width: 132px; padding: 11px 22px; border: 0; border-radius: 999px; background: #e65d26; color: #fff; font: inherit; font-weight: 700; cursor: pointer; }
+.policy-page-submit:disabled { background: #c9b9ae; cursor: not-allowed; }
+.policy-accepted-status { margin: 0; color: #267547; font-weight: 600; }
+@media (max-width: 480px) { .policy-dialog { padding: 28px 20px 20px; } .policy-page { padding: 20px 12px; } }

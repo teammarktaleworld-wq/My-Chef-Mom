@@ -1,3 +1,11 @@
+import { notFound } from "next/navigation";
+
+// The page is temporarily disabled while keeping its implementation for later.
+export default function TrialRefundPolicyPage(): never {
+  return notFound();
+}
+
+/*
 import type { Metadata } from "next";
 import Link from "next/link";
 import PolicyPageAcknowledgement from "@/components/policy/PolicyPageAcknowledgement";
@@ -37,3 +45,4 @@ export default function TrialRefundPolicyPage() {
     </main>
   );
 }
+*/

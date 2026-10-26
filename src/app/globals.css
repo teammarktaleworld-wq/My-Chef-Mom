@@ -25,6 +25,7 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+/* Trial/refund policy styling is paused with the feature.
 .policy-dialog-backdrop { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; padding: 20px; background: rgba(26, 10, 0, .62); backdrop-filter: blur(5px); }
 .policy-dialog { position: relative; width: min(100%, 520px); max-height: min(90vh, 720px); overflow-y: auto; padding: 32px; border: 1px solid rgba(255, 107, 44, .18); border-radius: 24px; background: #fffaf5; color: #38251b; box-shadow: 0 24px 80px rgba(26, 10, 0, .28); }
 .policy-dialog h2, .policy-page-card h1 { margin: 0 0 12px; color: #1a0a00; font-family: Georgia, serif; font-size: clamp(25px, 5vw, 34px); line-height: 1.15; }
@@ -58,3 +59,4 @@ body {
 .policy-page-submit:disabled { background: #c9b9ae; cursor: not-allowed; }
 .policy-accepted-status { margin: 0; color: #267547; font-weight: 600; }
 @media (max-width: 480px) { .policy-dialog { padding: 28px 20px 20px; } .policy-page { padding: 20px 12px; } }
+*/
